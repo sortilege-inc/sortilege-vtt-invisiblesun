@@ -238,18 +238,17 @@ server.
 
 ## STOPPED HERE — to resume
 
-**M0 through M4 are landed and pushed**, and the site is **live**:
-https://sortilege-inc.github.io/sortilege-vtt-invisiblesun/ — the books, the sheet and the
-creator all work there. `bash build/build.sh` is green; the corpus is at
-`titterpig-dsl-invisiblesun` `ad584c1` with D1 in it.
+**M0 through M5 are landed and pushed**, and all of it is live:
+https://sortilege-inc.github.io/sortilege-vtt-invisiblesun/ — the books, the five vislae, the
+sheet and the creator. `bash build/build.sh` is green; the corpus is at
+`titterpig-dsl-invisiblesun` `8c813d5`.
 
-**Next is M5, the five sample vislae as starts.** Everything it needs is in place:
+**One decision waits on the owner: D3's images** (see the ⚠ under D3). They are converted and
+sitting at `/tmp/claude-1000/-home-hewhocutsdown/62370cce-5a16-4a03-931d-6cc13ab6362b/scratchpad/fortes-webp/`;
+committing them is `cp` plus deleting the last line of `.gitignore`. Nothing else is blocked by it
+— the creator's Forte step simply shows no page panel until they are there.
 
-- `^"Sample Character"` × 5 in the `key` book, each a name, a `^"Descriptor"` and a page.
-- The creator already builds the same sentence from its picks, in the same form, so a start is
-  the descriptor parsed back into picks: match each of foundation / heart / order / forte against
-  the entity names of those types, fix what resolves, and leave the rest of the walk open (D2).
-  Omar Vanderal's descriptor resolves all four; check the other four before assuming they do.
-- `IsCreator.save(v)` seeds the draft; route the Vislae tab's cards to `#creator/begin`.
-
-Then M6: the CNAME (the owner's step in the Pages settings) and the README's final pass.
+**M6 is what remains:** the owner adds the `invisiblesun.sortilege.online` CNAME in the repo's
+Pages settings (and a `CNAME` file at the root), then the README takes its final pass. After that
+the landing is complete and the next phase — the GM's table under `gm/`, sessions, the Worker — is
+a fresh piece of work on the same engine.
