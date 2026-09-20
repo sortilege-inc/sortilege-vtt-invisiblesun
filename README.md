@@ -16,7 +16,7 @@ player sessions come later.
 | M1 — `build/` generates `data/` from the corpus; the gate and the shape check | **landed** (2026-09-20) |
 | M2 — the books: reader, margin notes, glossary, setting prose, the decks | **landed** (2026-09-20) |
 | M3 — the vislae sheet, derived from the corpus `^"Vislae"` ACTOR | **landed** (2026-09-20) |
-| M4 — the character creator | planned |
+| M4 — the character creator | **landed** (2026-09-20) |
 | M5 — the five sample vislae as starts | planned |
 | M6 — deployed | planned |
 

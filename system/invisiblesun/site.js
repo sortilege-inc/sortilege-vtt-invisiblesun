@@ -342,13 +342,6 @@ window.VttSiteTabs = (function () {
   return [
     { id: 'books', label: 'The books', render: renderBooks },
     { id: 'vislae', label: 'Vislae', render: renderVislae },
-    {
-      id: 'creator',
-      label: 'Make a vislae',
-      render: (c) => soon(c, {
-        title: 'Make a vislae',
-        note: 'The Key’s own six (and seventh, and eighth) steps, walked one at a time — M4.',
-      }),
-    },
+    { id: 'creator', label: 'Make a vislae', render: (c, p, ctx) => window.IsCreator.render(c, p, ctx) },
   ];
 })();

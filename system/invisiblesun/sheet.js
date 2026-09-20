@@ -313,5 +313,10 @@ window.IsSheet = (function () {
     return s && s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : s;
   }
 
-  return { spec, blank, derive, render, BOOKS, CERTES_POOLS, QUALIA_POOLS, HEART_SKILLS, STARTING_DEGREE };
+  return {
+    spec, blank, derive, render, BOOKS,
+    CERTES_POOLS, QUALIA_POOLS, HEART_SKILLS, SHADOW_SKILL_LEVEL, STARTING_DEGREE,
+    // the creator walks the same controls over the same draft
+    controls: { stepper, picker, row, textInput, truncate },
+  };
 })();
