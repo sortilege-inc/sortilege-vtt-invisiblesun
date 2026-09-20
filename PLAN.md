@@ -123,32 +123,22 @@ Envelope are not converted and the PDFs are no longer on disk.
   fixed and the step is left open — the tool never guesses which forte was meant.
 
 **D3 — The forte path.** The book's rule is "start with the first one and then select more,
-following the path indicated"; the path is the flowchart, which the corpus holds only as
-image-only pages (owner-excluded in the coverage manifests) — the 30 flowcharts exist as PNGs in
-the conversion archive. The DSL lists each forte's abilities flat, in printed order.
-- **(owner) Decided:** the Forte step shows the flowchart image beside the ability list (the 30
-  PNGs copied into this repo under `assets/art/fortes/`, web-sized), the forte's own sentence
-  verbatim, and the starting pick = the first listed ability, or a pick among the first ones where
-  that forte's sentence says "one of the first ones (my choice as to which)". The player reads the
-  path; the tool does not encode edges it does not have. The archive has 30 charts for 31 fortes:
-  each of the 30 matches a forte by name (checked 2026-09-20, 0 charts unmatched), and the one
-  with none is **Writhes And Squirms** — its chart falls on The Key p139, one page past the
-  odd-page run 79–137 that was extracted. That forte shows its sentence alone rather than a wrong
-  image, and the gap goes to the corpus `TODO.md`.
-- **⚠ The premise changed, and this needs the owner again (2026-09-20).** The archive's
-  "flowchart" extracts are not isolated diagrams: each is a **whole printed page** of *The Key*,
-  bbox-cropped, so it carries the page's body text as well as the tree — and on some pages that
-  text is cut mid-column (*Bears an Orb* opens `o enhance all` / `el of this ability`). Converted
-  to WebP at 1200px they are 4.7 MB for the thirty. **This repo is public** (the corpus repo is
-  private), so committing them publishes thirty full pages of a commercial sourcebook, which is a
-  different act from the generated text already here. **The code is written and works** — the
-  Forte step shows the page when it is present and shows no panel at all when it is not — but the
-  images are **held out of the commit** (`.gitignore`, kept at
-  `/tmp/claude-1000/…/scratchpad/fortes-webp/`). Three ways forward: **(a)** commit them as they
-  are; **(b)** leave them out, as now, and let the abilities stand alone; **(c)** crop each to its
-  diagram by hand — thirty crops, and the automatic attempts did not isolate it, because the
-  page's decorative border is the same orange as the tree's boxes. *Recommendation:* (b) for the
-  public site, and (a) only if the owner is comfortable publishing the pages.
+following the path indicated"; the path is the flowchart, and the corpus held the abilities but
+no edges.
+- **(owner) Decided, then decided again (2026-09-20).** The first decision was to show the
+  archive's flowchart images beside the ability list. Looking at them changed the premise: they
+  are not isolated diagrams but **whole printed pages**, some with body text cut mid-column, and
+  this repo is public while the corpus repo is private. The owner's call on seeing that: **no
+  diagrams, and encode the path-dependence in the corpus instead**, so our own interface diagrams
+  can be drawn from data — an image is not DSL-legal content.
+- **Done.** `^"Forte Ability"` now declares `^"Follows"`, and the corpus carries **289 edges
+  across 30 fortes** (`titterpig-dsl-invisiblesun` `da87e78`). The edges were read off the page
+  renders as a conversion source and gated from both sides by
+  `support/scripts/verify_forte_paths.py`; no image is referenced by the corpus or shipped by
+  this repo. The site draws the tree itself, in SVG, from those edges.
+- *Writhes And Squirms* has no path: its diagram is on The Key p139, one page past the run the
+  conversion extracted. Declared in the corpus with that reason; the site says so where it would
+  otherwise draw.
 
 **D4 — Vance spell class.** The 1st-degree Vance takes six spells "from those we can fit into our
 minds (alpha or beta class)". Class is the card's *size* on the Vance deck and is not in the
