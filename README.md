@@ -13,7 +13,7 @@ player sessions come later.
 | Milestone | State |
 |---|---|
 | M0 — repo skeleton: the engine, the parser, the shell | **landed** (2026-09-20) |
-| M1 — `build/` generates `data/` from the corpus, two-directional gate | in progress |
+| M1 — `build/` generates `data/` from the corpus; the gate and the shape check | **landed** (2026-09-20) |
 | M2 — the books: reader, margin notes, glossary, setting prose, the decks | planned |
 | M3 — the vislae sheet, derived from the corpus `^"Vislae"` ACTOR | planned |
 | M4 — the character creator | planned |
@@ -36,8 +36,19 @@ gates report 13 of 13 books and 15 of 15 decks converted, 0 source units uncover
 `data/*.js` is generated and regenerating is the only way to change it.
 
 ```bash
-bash build/build.sh            # parse → build → verify (both directions) → node --check
+bash build/build.sh            # build → verify both directions → check shapes → node --check
 ```
+
+| Script | What it does |
+|---|---|
+| `build/parse_dsl.py` | The generic DSL parser (spec 0.5). Contract: every token consumed or it raises. Two things this corpus needed: a `RULES` block's free-text lines lifted verbatim (the tokenizer drops the punctuation they are made of), and a `^"Level" ENUM "subsection"` instance value attached to its property rather than left loose in the body. |
+| `build/build_data.py` | One `data/<book>.js` per book plus `data/<book>.notes.js` for its margin notes, and `data/index.js`. Holds the file → book map — the only hand-written list in the build — and refuses to run if any corpus file is claimed by no book. |
+| `build/verify_data.py` | The gate, both directions: every string and caret name the corpus prints reaches `data/`, and every string in `data/` came from the corpus. |
+| `build/check_shape.py` | What the gate cannot see: that a string landed on the right *field*. Every assertion is against a count the corpus itself supplies. |
+
+Gate status from `bash build/build.sh` on 2026-09-20: 41 corpus files → 15 books,
+**6,779 entities + 3,532 margin notes**; `verify_data: 25,391 strings + 2,656 lore lines —
+0 uncovered · 0 unsourced`; `check_shape: OK` (42 assertions).
 
 ## Layout
 

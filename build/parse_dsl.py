@@ -248,6 +248,11 @@ class Parser:
 
     def parse_entity(self):
         h = self.next().val
+        # `#hash: "…"` — one line of a RULES block, lifted verbatim by lift_rule_lines()
+        if self.peek() and self.peek().kind == "COLON":
+            self.next()
+            t = self.expect("STR")
+            return {"n": "rule", "hash": h, "text": unescape(t.val)}
         ekind = None
         t = self.peek()
         if t.kind == "ID" and t.val != "DEF":
@@ -379,6 +384,17 @@ class Parser:
             node["type"] = "ENUM"
             if self.peek() and self.peek().kind == "LBRACK":
                 node["options"] = [e["v"] for e in self.parse_list() if e.get("k") == "str"]
+                return node
+            # A DECLARATION lists its options; an INSTANCE names one of them
+            # (`^"Level" ENUM "subsection"`). Without this the value is left loose in the
+            # body — present, but attached to nothing, which is how a field goes missing
+            # while every string still round-trips.
+            t2 = self.peek()
+            if t2 and t2.kind in ("STR", "INT", "BOOL"):
+                v = self.next()
+                node["value"] = (unescape(v.val) if v.kind == "STR"
+                                 else int(v.val) if v.kind == "INT"
+                                 else v.val == "true")
             return node
         if t.kind == "ID" and t.val in SCALAR_TYPES:
             node["type"] = self.next().val
@@ -474,9 +490,54 @@ class Parser:
         raise SyntaxError("%s: cannot use %r as a value (line %d)" % (self.path, t, t.line))
 
 
+RULES_OPEN = re.compile(r"(?m)^[ \t]*RULES[ \t]*\{")
+RULE_LINE = re.compile(r"(?m)^([ \t]*)(#[A-Za-z0-9_]+)[ \t]*:[ \t]*(\S[^\n]*?)[ \t]*$")
+
+
+def lift_rule_lines(text):
+    """A RULES block (spec §11) carries one rule per LINE as free text:
+
+        RULES {
+            #hash: WHEN [^"Vislae" attempts an action] THEN roll a pool of d10 …
+        }
+
+    The tokenizer drops the punctuation that text is made of, so the line cannot be
+    rebuilt from tokens — and a rebuilt line would not be verbatim, which is the one thing
+    it must be. So each line is lifted to a quoted string IN PLACE, on its own line, with
+    only DSL escapes added. The parser then reads `#hash: "…"`, and the gate, which lifts
+    the same way before counting, sees the same string on both sides.
+
+    A block whose braces do not balance is left exactly as it is: the parser will then
+    fail on it loudly rather than this quietly mangling it.
+    """
+    out, i = [], 0
+    for m in RULES_OPEN.finditer(text):
+        if m.start() < i:
+            continue
+        depth, k = 0, m.end() - 1          # the regex ends on the opening brace
+        while k < len(text):
+            if text[k] == "{":
+                depth += 1
+            elif text[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            k += 1
+        if depth != 0:
+            continue
+        body = RULE_LINE.sub(
+            lambda r: '%s%s: "%s"' % (r.group(1), r.group(2), r.group(3).replace("\\", "\\\\").replace('"', '\\"')),
+            text[m.end():k])
+        out.append(text[i:m.end()])
+        out.append(body)
+        i = k
+    out.append(text[i:])
+    return "".join(out)
+
+
 def parse_path(path):
     with open(path, encoding="utf-8") as fh:
-        text = fh.read()
+        text = lift_rule_lines(fh.read())
     toks = tokenize(text)
     if not toks:
         return None
