@@ -222,22 +222,23 @@ server.
 
 ## STOPPED HERE — to resume
 
-**M0 and M1 are landed and pushed** (`0165ab6`, `7215bb1`). `bash build/build.sh` is green;
-`system/invisiblesun/site.js` holds the shelf (M1's loader proof) and two placeholders.
+**M0, M1 and M2 are landed and pushed**, and the site is **live**:
+https://sortilege-inc.github.io/sortilege-vtt-invisiblesun/ (Pages from `main`, root, enabled
+2026-09-20; the CNAME for D6 is still the owner's step). `bash build/build.sh` is green.
 
-**Next is M2, the reader.** Everything it needs is in `data/`:
+**Next is M3, the vislae sheet.** Do D1's corpus edit first, as its own commit in
+`titterpig-dsl-invisiblesun` with `support/gates.sh` output in the message, then regenerate
+`data/` here and keep `build.sh` green. What M3 needs:
 
-- A book's tree is built from the `^"Rule"` fields, not from nesting: `Chapter` → `Section`
-  (a "A / B" path where a subsection sits under a sub) → `Level` (`chapter`, `section`,
-  `subsection`, `sub`, `sidebar`), in `Page` order. There is no parent/child link between rules.
-- A rule's sidebars are its `guidance[]`; its margin notes are the notes of the same `Book` and
-  `Page`, ordered by `Position` and set in their own `Colour`. Load the `notes` channel for the
-  reader only — `VttData.ready(id, ['main','notes'])`.
-- The Path is lore: `books.path.lore[0].sections` (level, title, paras), 300+ sections.
-- The decks are one book of 1,315 cards; filter by the `Deck`, `Color` and `Level` props.
-- Heads up for the reader's chapter list: The Key's outline carries mangled headings the corpus
-  faithfully reproduces (`R E O T`, `Tu Ka L`, `st -Degree Vance: Postulant`). They are the
-  publisher's, not ours — show them as printed and do not repair them in the tool.
+- The sheet's shape is the `^"Vislae"` ACTOR's property declarations alone — there is no
+  TEMPLATE and no `.actor` in this corpus, so every finger is a `^"X" ^"Type"` pick offering
+  every entity of that type in scope, and every magic list a pick-any of the same kind.
+- `^"Pools"` is a `DEF`-valued property holding the eight pools: render it as a group of
+  tracks. The declared value is the book's *normal starting value* (*Stat Pools*, p27); current
+  bene is live state, not a corpus value.
+- A chosen Order's 1st-degree abilities and a chosen Forte's abilities are already `children`
+  of those entities, in `slot` `DEGREES` / `ABILITIES` — `IsEntity.render` shows them today.
+- Nothing about the sheet is hand-listed. A number that exists only in prose becomes a named
+  constant citing its sentence (the table under *What The Key says the creator must do*).
 
-Then M3 (the sheet; D1's corpus edit is its own commit in `titterpig-dsl-invisiblesun` first,
-with `support/gates.sh` output in the message), M4 (the creator), M5, M6.
+Then M4 (the creator), M5 (the five sample vislae as starts), M6 (the CNAME and the README).
