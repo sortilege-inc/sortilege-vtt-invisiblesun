@@ -224,23 +224,18 @@ server.
 
 ## STOPPED HERE — to resume
 
-**M0, M1 and M2 are landed and pushed**, and the site is **live**:
-https://sortilege-inc.github.io/sortilege-vtt-invisiblesun/ (Pages from `main`, root, enabled
-2026-09-20; the CNAME for D6 is still the owner's step). `bash build/build.sh` is green.
+**M0 through M4 are landed and pushed**, and the site is **live**:
+https://sortilege-inc.github.io/sortilege-vtt-invisiblesun/ — the books, the sheet and the
+creator all work there. `bash build/build.sh` is green; the corpus is at
+`titterpig-dsl-invisiblesun` `ad584c1` with D1 in it.
 
-**Next is M3, the vislae sheet.** Do D1's corpus edit first, as its own commit in
-`titterpig-dsl-invisiblesun` with `support/gates.sh` output in the message, then regenerate
-`data/` here and keep `build.sh` green. What M3 needs:
+**Next is M5, the five sample vislae as starts.** Everything it needs is in place:
 
-- The sheet's shape is the `^"Vislae"` ACTOR's property declarations alone — there is no
-  TEMPLATE and no `.actor` in this corpus, so every finger is a `^"X" ^"Type"` pick offering
-  every entity of that type in scope, and every magic list a pick-any of the same kind.
-- `^"Pools"` is a `DEF`-valued property holding the eight pools: render it as a group of
-  tracks. The declared value is the book's *normal starting value* (*Stat Pools*, p27); current
-  bene is live state, not a corpus value.
-- A chosen Order's 1st-degree abilities and a chosen Forte's abilities are already `children`
-  of those entities, in `slot` `DEGREES` / `ABILITIES` — `IsEntity.render` shows them today.
-- Nothing about the sheet is hand-listed. A number that exists only in prose becomes a named
-  constant citing its sentence (the table under *What The Key says the creator must do*).
+- `^"Sample Character"` × 5 in the `key` book, each a name, a `^"Descriptor"` and a page.
+- The creator already builds the same sentence from its picks, in the same form, so a start is
+  the descriptor parsed back into picks: match each of foundation / heart / order / forte against
+  the entity names of those types, fix what resolves, and leave the rest of the walk open (D2).
+  Omar Vanderal's descriptor resolves all four; check the other four before assuming they do.
+- `IsCreator.save(v)` seeds the draft; route the Vislae tab's cards to `#creator/begin`.
 
-Then M4 (the creator), M5 (the five sample vislae as starts), M6 (the CNAME and the README).
+Then M6: the CNAME (the owner's step in the Pages settings) and the README's final pass.
