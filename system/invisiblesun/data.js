@@ -92,8 +92,12 @@ window.IsData = (function () {
       if (chapter && chapter !== current) {
         current = chapter;
         // the chapter's own unit when the book prints one, else the field as the label
+        // A chapter is labelled with the corpus's ^"Chapter" value, not with the
+        // entity's name: where two books print a heading of the same name the corpus
+        // disambiguates the entity ("Characters (The Key p13)"), and the chapter is
+        // still called Characters.
         const node = level === 'chapter'
-          ? { id: e.id, entity: e, label: e.name, depth: 0, kids: [] }
+          ? { id: e.id, entity: e, label: chapter, depth: 0, kids: [] }
           : { id: 'ch:' + chapter, entity: null, label: chapter, depth: 0, kids: [] };
         chapters[chapter] = node;
         roots.push(node);
@@ -103,6 +107,7 @@ window.IsData = (function () {
         // the chapter's own unit turns up after something printed above it
         chapters[chapter].entity = e;
         chapters[chapter].id = e.id;
+        chapters[chapter].label = chapter;
         return;
       }
 
