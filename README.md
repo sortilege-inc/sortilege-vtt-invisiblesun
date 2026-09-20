@@ -14,7 +14,7 @@ player sessions come later.
 |---|---|
 | M0 — repo skeleton: the engine, the parser, the shell | **landed** (2026-09-20) |
 | M1 — `build/` generates `data/` from the corpus; the gate and the shape check | **landed** (2026-09-20) |
-| M2 — the books: reader, margin notes, glossary, setting prose, the decks | planned |
+| M2 — the books: reader, margin notes, glossary, setting prose, the decks | **landed** (2026-09-20) |
 | M3 — the vislae sheet, derived from the corpus `^"Vislae"` ACTOR | planned |
 | M4 — the character creator | planned |
 | M5 — the five sample vislae as starts | planned |
