@@ -176,8 +176,8 @@ Git identity per repo, as TEETH: `Jordan Peacock <jordan@sortilege.online>` (set
 
 | # | Milestone | Proof required |
 |---|---|---|
-| M0 | Repo skeleton: copy `engine/*.js` and `build/parse_dsl.py` (generic code only — no `data/`, no `system/teeth/`, no css, no TEETH book map); `.gitignore`, `launch.json`, README stub, this plan; git identity | first commit; `grep -ri teeth` over the repo finds only this plan's references to the template; `python3 -m http.server 8736` serves an empty shell with 0 console errors |
-| M1 | `build/` generates `data/` from the corpus: `parse_dsl` learns `RULES` lines; a new `build_data.py` (written for this corpus, `window.INVISIBLESUN`) maps the 41 files to site books (The Key = rules-key + hearts/fortes/foundations/orders/souls/arcs/sample/goods/currencies; The Gate = rules-gate + glossary; The Way = rules-way + spells/minor-magic/secrets/aggregates/goetic/changes; The Path = the `.lore`; the nine books one each; The Decks = the index + cards files; margin notes ride with their book) and emits `data/index.js` + per-file scripts the engine loads on demand (8.97 MB is too much to load per page); `verify_data.py` two-directional | `bash build/build.sh` → parse 41/41; `verify_data: N DSL strings + M lore lines — 0 uncovered · 0 unsourced`; `node --check` on every data file |
+| M0 | Repo skeleton: copy `engine/*.js` and `build/parse_dsl.py` (generic code only — no `data/`, no `system/teeth/`, no css, no TEETH book map); `.gitignore`, `launch.json`, README stub, this plan; git identity | **landed 2026-09-20** (`0165ab6`) — `grep -ri teeth` matches only this plan; the shell renders on 8736 and the three tabs route through their real links; console empty |
+| M1 | `build/` generates `data/` from the corpus: `parse_dsl` learns `RULES` lines; a new `build_data.py` (written for this corpus, `window.INVISIBLESUN`) maps the 41 files to site books and emits `data/index.js` + per-book scripts the engine loads on demand; `verify_data.py` two-directional | **landed 2026-09-20** (`7215bb1`) — `build.sh`: 41 files → 15 books, 6,779 entities + 3,532 notes; `verify_data: 25,391 strings + 2,656 lore lines — 0 uncovered · 0 unsourced`; `check_shape: OK` (42 assertions); `node --check` on every data file. Browser: the shelf lists 15 books from `index.js` alone, and opening The Key fetched exactly `key.js` + `key.notes.js` (the decks stayed unloaded); *Step 1: Choose an Order* carries Text/Book/Page/Level/Chapter/Section and The Key p21's note carries `#862124` · prose |
 | M2 | The site shell and the **Rules** reader: book picker (13 + The Path + The Decks), chapters › sections from the `Rule` fields, the rule verbatim with its `GUIDANCE` sidebars and the page's margin notes beside it in their ink, glossary, `.lore` rendered from Markdown, search; the decks as a card grid filterable by deck / sun / level | browser: The Key › Characters › *Step 1: Choose an Order* reads verbatim with its p21 margin notes; The Gate glossary; The Path › Precepts; search "bene" hits across books; Spells deck filtered to Gold shows only Gold cards; 0 console errors |
 | M3 | `system/invisiblesun/sheet.js`: the Vislae sheet derived from the ACTOR (+ D1 declarations): picks for the six fingers from every entity of the type, the `Pools` DEF as a group of pool tracks (declared value = normal starting value, tokens live), counters, `LIST OF ^"Type"` as pick-any lists offering every entity of the type in scope, the chosen Order's 1st-degree abilities and the chosen Forte's abilities rendered from `children`; preview mode (nothing saved) | browser: a preview Vislae shows Certes/Qualia from a chosen Heart, eight pools, a Vance's six Postulant abilities, a forte's abilities by level and sun; localStorage byte-identical before and after |
 | M4 | **The character creator**: The Key's chapter walked step by step — the entity text verbatim at each step, the controls from the sheet's spec, the prose-only numbers as named constants citing their sentences (table above); Step 7 and *Finishing Touches* as the book's prompts with free text (bonds, neighbourhood, name, appearance, Shadow skill, memento, quirk); output **Download as JSON** (`kind: sortilege-vtt-character`, v1, `system: invisiblesun`) and a printed sheet; draft in this browser under a site key | browser, through the real controls: Order Vance → Heart Stoic (Certes 7 / Qualia 10, pools accept exactly those totals and refuse more) → two heart skills → Forte with the starting ability → Soul → Foundation Established (HK 10, savings shown verbatim) → Arc → six Vance spells (refuses a seventh) → quirk, Shadow skill, name; the file round-trips through `readCharacter`; localStorage untouched outside the draft key |
@@ -217,20 +217,27 @@ server.
 | 10 | **(owner, D4)** All 50 Vance spells are offered unfiltered with the book's "alpha or beta class" limit quoted beside the picker; `^"Class"` goes to the corpus TODO | Class is the card's physical size and is not in the corpus; a guessed filter would silently remove legal choices. |
 | 11 | **(owner, D5)** Black chrome with the sun colours as accents, cream reading pages, Cormorant Garamond / Cinzel, margin notes in the ink from each note's own `Colour` | The books' own scheme; the note colour is already content in the corpus, so it is read, not chosen. |
 | 12 | **(owner, D6)** `invisiblesun.sortilege.online` by Pages CNAME at M6; nothing hard-codes a single origin | TEETH's CNAME commit was rejected once because the Worker admitted one origin; this one assumes two from the start. |
+| 13 | A RULES block's lines are lifted to quoted strings in place before tokenizing (`parse_dsl.lift_rule_lines`), and the gate lifts the same way before counting | The tokenizer drops the punctuation free text is made of, so a rule line cannot be rebuilt from tokens — and a rebuilt line would not be verbatim, which is the one thing it must be. |
+| 14 | `build/check_shape.py` joins the build: 42 assertions on the fields the site reads, each against a count grepped from the corpus, and it runs in `build.sh` | The string gate is blind to a string on the wrong field. `^"Level" ENUM "subsection"` parsed as a property with no value plus a loose string: 3,726 rule levels and 3,532 note kinds attached to nothing, with every string still round-tripping. The parser is fixed; this is what would catch the next one. |
 
 ## STOPPED HERE — to resume
 
-Plan committed; D1–D6 settled; **no code written yet**. Nothing is waiting on the owner. Resume at
-M0, from `~/Sortilege/VTT/sortilege-vtt-invisiblesun`:
+**M0 and M1 are landed and pushed** (`0165ab6`, `7215bb1`). `bash build/build.sh` is green;
+`system/invisiblesun/site.js` holds the shelf (M1's loader proof) and two placeholders.
 
-```
-git config user.name "Jordan Peacock" && git config user.email "jordan@sortilege.online"
-T="$HOME/Sortilege/Campaigns/2026 TEETH/sortilege-vtt-teeth"        # READ-ONLY source; never write to it
-mkdir -p engine build && cp "$T"/engine/*.js engine/ && cp "$T"/build/parse_dsl.py build/
-```
+**Next is M2, the reader.** Everything it needs is in `data/`:
 
-Then M1: extend `build/parse_dsl.py` for `#hash: WHEN […] THEN …` lines inside `RULES {}` (the one
-parse failure, `invisiblesun-0.5-core-base.ttrpg` line 122), write `build/build_data.py` for this
-corpus (`window.INVISIBLESUN`, the file → book map, per-book data files) and `build/verify_data.py`,
-and run `bash build/build.sh`. D1's corpus edit is its own commit in
-`titterpig-dsl-invisiblesun` before M3, with `support/gates.sh` output in the message.
+- A book's tree is built from the `^"Rule"` fields, not from nesting: `Chapter` → `Section`
+  (a "A / B" path where a subsection sits under a sub) → `Level` (`chapter`, `section`,
+  `subsection`, `sub`, `sidebar`), in `Page` order. There is no parent/child link between rules.
+- A rule's sidebars are its `guidance[]`; its margin notes are the notes of the same `Book` and
+  `Page`, ordered by `Position` and set in their own `Colour`. Load the `notes` channel for the
+  reader only — `VttData.ready(id, ['main','notes'])`.
+- The Path is lore: `books.path.lore[0].sections` (level, title, paras), 300+ sections.
+- The decks are one book of 1,315 cards; filter by the `Deck`, `Color` and `Level` props.
+- Heads up for the reader's chapter list: The Key's outline carries mangled headings the corpus
+  faithfully reproduces (`R E O T`, `Tu Ka L`, `st -Degree Vance: Postulant`). They are the
+  publisher's, not ours — show them as printed and do not repair them in the tool.
+
+Then M3 (the sheet; D1's corpus edit is its own commit in `titterpig-dsl-invisiblesun` first,
+with `support/gates.sh` output in the message), M4 (the creator), M5, M6.
