@@ -1,0 +1,213 @@
+/* Invisible Sun — the site.
+   The books are cream pages set in a black box; the chrome here is the box and the
+   reading surface is the page (PLAN.md D5). The nine suns are the accent palette, and a
+   margin note is set in the ink the book prints it in — that ink comes from the note's own
+   ^"Colour" field in the corpus, never from this file. The five inks below are named for
+   reference only. Colour values for the suns are this tool's own; the book prints the
+   suns as art, not as swatches. */
+
+:root {
+  /* the box */
+  --box: #0d0c10;
+  --box-2: #16151b;
+  --box-3: #232128;
+  --box-rule: #35323d;
+  --box-ink: #e8e3d8;
+  --box-ink-2: #a49e92;
+
+  /* the page */
+  --page: #f2ebdc;
+  --page-2: #e8dfcb;
+  --page-3: #ded2b9;
+  --ink: #1b1813;
+  --ink-2: #413a30;
+  --ink-3: #6f6555;
+  --rule: #c3b593;
+
+  /* the nine suns */
+  --sun-silver: #8d939c;
+  --sun-green: #4a7c46;
+  --sun-blue: #2f5f9e;
+  --sun-indigo: #4f3f8c;
+  --sun-grey: #77746e;
+  --sun-pale: #9a9384;
+  --sun-red: #96262a;
+  --sun-gold: #a8842b;
+  --sun-invisible: #221c2b;
+  --sun-varies: #6f6555;
+
+  /* the margin channel's five printed inks (corpus ^"Colour" values) */
+  --note-red: #862124;
+  --note-blue: #243061;
+  --note-orange: #e38529;
+  --note-purple: #663895;
+  --note-slate: #484b75;
+
+  --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --display: 'Cinzel', 'Cormorant Garamond', Georgia, serif;
+  --mono: ui-monospace, 'JetBrains Mono', monospace;
+}
+
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--box);
+  color: var(--box-ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.5;
+}
+a { color: inherit; }
+
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.15rem; }
+h4 {
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.2rem;
+  margin: 1.4rem 0 0.6rem;
+}
+p { margin: 0 0 0.75rem; }
+.prose p:last-child { margin-bottom: 0; }
+.muted { color: var(--ink-3); }
+.small { font-size: 0.88rem; }
+.empty { color: var(--ink-3); font-style: italic; padding: 1.5rem 0; }
+
+/* ── the chrome ───────────────────────────────────────────── */
+.site-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.1rem 1.6rem 0;
+  background: var(--box);
+  border-bottom: 1px solid var(--box-rule);
+}
+.brand-title {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.brand-sub {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--box-ink-2);
+  margin: 0.1rem 0 0.9rem;
+}
+.site-tabs { display: flex; gap: 0.2rem; margin-left: auto; }
+.site-tab {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-family: var(--display);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--box-ink-2);
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+}
+.site-tab:hover { color: var(--box-ink); }
+.site-tab.active {
+  color: var(--ink);
+  background: var(--page);
+  border-color: var(--box-rule);
+}
+.site-tab.disabled { opacity: 0.4; pointer-events: none; }
+.site-main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.6rem;
+}
+
+/* ── the page ─────────────────────────────────────────────── */
+.page {
+  background: var(--page);
+  color: var(--ink);
+  border: 1px solid var(--box-rule);
+  border-radius: 2px;
+  padding: 1.6rem 1.8rem;
+}
+.page-head { border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; margin-bottom: 1rem; }
+.crumbs { font-size: 0.84rem; color: var(--ink-3); margin-bottom: 0.3rem; }
+.crumbs a { color: var(--ink-3); }
+
+/* a rule and its margin channel, as the books set them */
+.reading { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; gap: 1.6rem; }
+.notes { border-left: 1px solid var(--rule); padding-left: 1rem; }
+.note { font-style: italic; font-size: 0.9rem; margin-bottom: 1rem; color: var(--note-red); }
+.note .note-ref { font-style: normal; font-size: 0.8rem; letter-spacing: 0.04em; }
+.guidance {
+  background: var(--page-2);
+  border-left: 3px solid var(--sun-gold);
+  padding: 0.8rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+/* ── controls ─────────────────────────────────────────────── */
+.btn {
+  font-family: var(--display);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--rule);
+  background: var(--page-2);
+  color: var(--ink);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.btn:hover { background: var(--page-3); }
+.btn.ghost { background: transparent; }
+.btn.tiny { font-size: 0.68rem; padding: 0.2rem 0.5rem; }
+.search, .text, .scope {
+  font-family: var(--serif);
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--rule);
+  background: var(--page);
+  color: var(--ink);
+  border-radius: 2px;
+}
+.chiprow { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin: 1rem 0; }
+
+/* ── sun accents ──────────────────────────────────────────── */
+.sun { --this-sun: var(--sun-varies); }
+.sun-silver { --this-sun: var(--sun-silver); }
+.sun-green { --this-sun: var(--sun-green); }
+.sun-blue { --this-sun: var(--sun-blue); }
+.sun-indigo { --this-sun: var(--sun-indigo); }
+.sun-grey { --this-sun: var(--sun-grey); }
+.sun-pale { --this-sun: var(--sun-pale); }
+.sun-red { --this-sun: var(--sun-red); }
+.sun-gold { --this-sun: var(--sun-gold); }
+.sun-invisible { --this-sun: var(--sun-invisible); }
+.sun-dot {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: var(--this-sun, var(--sun-varies));
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  vertical-align: baseline;
+}
+
+@media (max-width: 900px) {
+  .reading { grid-template-columns: minmax(0, 1fr); }
+  .notes { border-left: none; border-top: 1px solid var(--rule); padding: 1rem 0 0; }
+}
