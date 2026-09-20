@@ -135,6 +135,20 @@ the conversion archive. The DSL lists each forte's abilities flat, in printed or
   with none is **Writhes And Squirms** — its chart falls on The Key p139, one page past the
   odd-page run 79–137 that was extracted. That forte shows its sentence alone rather than a wrong
   image, and the gap goes to the corpus `TODO.md`.
+- **⚠ The premise changed, and this needs the owner again (2026-09-20).** The archive's
+  "flowchart" extracts are not isolated diagrams: each is a **whole printed page** of *The Key*,
+  bbox-cropped, so it carries the page's body text as well as the tree — and on some pages that
+  text is cut mid-column (*Bears an Orb* opens `o enhance all` / `el of this ability`). Converted
+  to WebP at 1200px they are 4.7 MB for the thirty. **This repo is public** (the corpus repo is
+  private), so committing them publishes thirty full pages of a commercial sourcebook, which is a
+  different act from the generated text already here. **The code is written and works** — the
+  Forte step shows the page when it is present and shows no panel at all when it is not — but the
+  images are **held out of the commit** (`.gitignore`, kept at
+  `/tmp/claude-1000/…/scratchpad/fortes-webp/`). Three ways forward: **(a)** commit them as they
+  are; **(b)** leave them out, as now, and let the abilities stand alone; **(c)** crop each to its
+  diagram by hand — thirty crops, and the automatic attempts did not isolate it, because the
+  page's decorative border is the same orange as the tree's boxes. *Recommendation:* (b) for the
+  public site, and (a) only if the owner is comfortable publishing the pages.
 
 **D4 — Vance spell class.** The 1st-degree Vance takes six spells "from those we can fit into our
 minds (alpha or beta class)". Class is the card's *size* on the Vance deck and is not in the
@@ -181,7 +195,7 @@ Git identity per repo, as TEETH: `Jordan Peacock <jordan@sortilege.online>` (set
 | M2 | The site shell and the **Rules** reader: book picker, chapters › sections from the `Rule` fields, the rule verbatim with its `GUIDANCE` sidebars and the page's margin notes beside it in their ink, glossary, `.lore` rendered from Markdown, search; the decks as a card grid filterable by deck / sun / level | **landed 2026-09-20** — browser, through the real controls: The Key's 13 chapters in the outline; *Step 1: Choose an Order* reads verbatim, trails *Characters › R E O T* and carries its three p21 margin notes in `#862124`; *Speaks with the Moon* shows its sidebar as GUIDANCE and 4 notes; The Gate's 228 glossary entries listed, *Actuality* opens with its definition; *Bears an Orb* renders its five prose fields and all nine abilities with level and sun; the decks filtered to Gold → 207 of 1,315, every card Gold; The Path's 300 lore sections, *THE CITY OF SATYRINE* opens; search "bene" → 60 hits with excerpts. 0 console errors |
 | M3 | `system/invisiblesun/sheet.js`: the Vislae sheet derived from the ACTOR (+ D1 declarations) | **landed 2026-09-20** — browser, through the real controls: the six fingers offer exactly what the corpus holds (5 orders, 4 hearts, 31 fortes, 13 souls, 8 foundations); Stoic set Certes 7 / Qualia 10 and Established set Hidden Knowledge 10; Vance showed its *1st-Degree Vance: Postulant* abilities verbatim and Bears an Orb its nine ability cards; the heart's ten skills offered and the third pick refused (a pair, per the book); Intellect stepped to 3 and the Qualia group read *3 of 10 divided*; House fell back to free text because the corpus has no `^"Vislae House"` instance. localStorage byte-identical and empty throughout |
 | M4 | **The character creator**: The Key's chapter walked step by step | **landed 2026-09-20** — browser, through the real controls: twelve steps, each showing the book's entity verbatim with its page; Vance → Stoic (Certes 7 / Qualia 10, and a stat refuses a point it does not have: 8 clicks on Accuracy gave 7, 11 points asked of Qualia gave 10) → two heart skills, the third refused → Walks the Path of Suns with its nine abilities → The Watcher → Established, its printed table shown and house / Shadow skill / memento / a connection / a quirk written → Uncover a Secret → the Vance's six first-degree grants verbatim and six spells chosen → name, appearance, languages → the finished sheet, whose describing sentence reads *Ossian Vahl is an Established Stoic of the Order of the Vance who Walks the Path of Suns*, the same form The Key prints for its own five. The file round-trips byte-identically through `readCharacter`, and the real **Load a character file…** control restored the whole character into a blank creator. localStorage held one key throughout, the draft |
-| M5 | **Characters** tab (D2): the five sample vislae as starts into the creator | browser: Omar Vanderal opens the creator with Established / Stoic / Vance / Walks the Path of Suns fixed and the descriptor shown verbatim |
+| M5 | **Vislae** tab (D2): the five sample vislae as starts into the creator | **landed 2026-09-20** — browser, through the real controls: all five resolve all four parts of their printed descriptor, including *Order of Goetica* → Goetic, a bare *Apostate*, and *Explores the Noösphere*; **Start a vislae from this** on Lord Vryx seeded the draft and opened the walk reading *This vislae is an Iconoclastic Ardent of the Order of Goetica who Hosts a Legion* with *Started from Lord Vryx, whom The Key illustrates on page 59*, and Order, Forte and Foundation marked done while Heart stayed open (its points are still undivided). The soul is left open by the book's own rule |
 | M6 | Deploy: GitHub Pages from `main`, root; CNAME when the owner adds it (D6); README complete | live URL loads The Key reader and the creator with 0 console errors |
 
 One commit per milestone, pushed; each proven in the browser by the main session through the

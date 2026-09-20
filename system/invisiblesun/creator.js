@@ -320,6 +320,10 @@ window.IsCreator = (function () {
       el('h2', {}, ['Make a vislae']),
       el('div', { class: 'muted' }, [
         sentence(v, st) || 'The Key builds a character in six steps, and then two more.',
+        v.startedFrom ? el('div', { class: 'small' }, [
+          'Started from ', el('i', {}, [v.startedFrom.name]),
+          ', whom ' + (v.startedFrom.book || 'The Key') + ' illustrates on page ' + v.startedFrom.page + '.',
+        ]) : null,
         el('button', {
           class: 'btn ghost tiny', type: 'button',
           onclick: () => {
@@ -390,9 +394,11 @@ window.IsCreator = (function () {
     if (step.forte && st.d.forte) {
       body.appendChild(el('h4', {}, ['Its abilities']));
       body.appendChild(el('p', { class: 'muted small' }, [
-        D.text(st.d.forte, 'Character Arcs') ? '' : '',
-        'A forte’s abilities are taken along the path its flowchart draws, starting at the first.',
+        'A forte’s abilities are taken along the path the book draws for it, starting at the first. '
+        + 'The path is printed as a diagram and the corpus holds no edges for it, so the page is '
+        + 'shown as printed rather than the path being guessed at.',
       ]));
+      body.appendChild(E.fortePath(st.d.forte));
       body.appendChild(el('div', { class: 'cards' }, st.d.forteAbilities.map((ab) => E.card(ab, () => window.IsOpenEntity(ab.id)))));
     }
 
@@ -518,6 +524,55 @@ window.IsCreator = (function () {
     Apostate: 'Apostate',
   };
 
+  // ── starting from one of the five vislae The Key illustrates ───────
+  // The book gives each a name and a descriptor — "An Established Stoic of the Order of
+  // the Vance who Walks the Path of Suns" — and every part of that sentence but one is an
+  // entity name. So a start is the sentence read back: whatever resolves is fixed, and
+  // whatever does not is left for the player. Nothing is guessed.
+  //
+  // The soul is absent by design, not by failure: "They are to be kept secret, and as
+  // such are never mentioned as part of the sentence that describes the character ...
+  // secret souls are the unspoken part of the describing sentence." (Step 4: Choose a
+  // Soul, The Key p22.)
+  function startFromDescriptor(text) {
+    const picks = {};
+    const resolved = [];
+    const src = String(text || '');
+    // the order first, by the phrase the book says that order is spoken of with
+    const order = Object.keys(ORDER_PHRASE)
+      .map((name) => ({ name, phrase: ORDER_PHRASE[name] }))
+      .filter((o) => src.indexOf(o.phrase) !== -1)
+      .sort((a, b) => b.phrase.length - a.phrase.length)[0];
+    if (order) {
+      const e = D.byType('Order', Sheet.BOOKS).find((x) => x.name === order.name);
+      if (e) { picks.Order = e.id; resolved.push({ what: 'Order', name: e.name }); }
+    }
+    // then the three whose names the sentence carries outright; longest match wins, so
+    // "Channels Strength And Skill" is not beaten by a shorter forte inside it
+    ['Foundation', 'Heart', 'Forte'].forEach((type) => {
+      const hit = D.byType(type, Sheet.BOOKS)
+        .filter((e) => src.toLowerCase().indexOf(e.name.toLowerCase()) !== -1)
+        .sort((a, b) => b.name.length - a.name.length)[0];
+      if (hit) { picks[type] = hit.id; resolved.push({ what: type, name: hit.name }); }
+    });
+    return { picks, resolved };
+  }
+
+  // Seed the draft from a sample character and open the walk at its first step.
+  function startFrom(sample, ctx) {
+    const v = Sheet.blank();
+    const { picks } = startFromDescriptor(D.text(sample, 'Descriptor'));
+    Object.keys(picks).forEach((k) => (v.picks[k] = picks[k]));
+    v.startedFrom = {
+      id: sample.id, name: sample.name,
+      descriptor: D.text(sample, 'Descriptor'),
+      book: D.val(sample, 'Book'), page: D.val(sample, 'Page'),
+    };
+    save(v);
+    ctx.go('creator', ['begin']);
+    if (window.VttSite) window.VttSite.render();
+  }
+
   // The sentence the book describes a character with: "An Established Stoic of the Order
   // of the Vance who Walks the Path of Suns" — foundation, heart, order, forte. A forte's
   // name is a verb and is printed as it stands.
@@ -532,5 +587,5 @@ window.IsCreator = (function () {
     return bits.filter(Boolean).join(' ');
   }
 
-  return { render, readCharacter, toFile, STEPS, DRAFT_KEY, load, save };
+  return { render, readCharacter, toFile, startFrom, startFromDescriptor, STEPS, DRAFT_KEY, load, save };
 })();

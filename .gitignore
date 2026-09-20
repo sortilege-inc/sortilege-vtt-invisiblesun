@@ -7,3 +7,9 @@ build/__pycache__/
 assets/originals/
 # a narrative is an instance, not part of the engine (see PLAN.md); keep any local one out
 campaigns/
+
+# The Key's forte pages (assets/art/fortes/*.webp) are NOT committed: the archive's
+# "flowchart" extracts are whole printed PAGES, not isolated diagrams, and this repo is
+# public. The code shows one when it is present and says so when it is not — see PLAN.md
+# D3, which was decided when these were believed to be diagrams. Owner's call.
+assets/art/fortes/

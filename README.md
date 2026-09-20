@@ -17,7 +17,7 @@ player sessions come later.
 | M2 — the books: reader, margin notes, glossary, setting prose, the decks | **landed** (2026-09-20) |
 | M3 — the vislae sheet, derived from the corpus `^"Vislae"` ACTOR | **landed** (2026-09-20) |
 | M4 — the character creator | **landed** (2026-09-20) |
-| M5 — the five sample vislae as starts | planned |
+| M5 — the five sample vislae as starts | **landed** (2026-09-20) |
 | M6 — deployed | planned |
 
 ## Running it

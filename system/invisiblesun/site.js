@@ -298,18 +298,16 @@ window.VttSiteTabs = (function () {
     ]);
   }
 
-  // ── the sheet ──────────────────────────────────────────────────────
-  // One vislae, live, in this browser and nowhere else: every control works and
-  // nothing is saved. M5 seeds it from the five vislae The Key illustrates.
-  let scratch = null;
-
+  // ── the five vislae The Key illustrates ────────────────────────────
+  // The book gives each a name, a portrait and one sentence. That sentence names the
+  // foundation, heart, order and forte, so it reads back into the creator's own picks —
+  // which is all a "start" is: four of the six fingers decided, the rest the player's.
   function renderVislae(container, path, ctx) {
     const page = el('div', { class: 'page' });
     container.appendChild(page);
-    page.appendChild(el('h2', {}, ['A vislae']));
+    page.appendChild(el('h2', {}, ['Vislae']));
 
-    const need = Sheet.BOOKS.filter((b) => !Data.has(b, 'main'));
-    if (need.length) {
+    if (Sheet.BOOKS.some((b) => !Data.has(b, 'main'))) {
       page.appendChild(el('div', { class: 'empty' }, ['Fetching the books a character is made from…']));
       Data.ready(Sheet.BOOKS, ['main']).then(() => {
         container.innerHTML = '';
@@ -317,26 +315,44 @@ window.VttSiteTabs = (function () {
       });
       return;
     }
-    if (!scratch) scratch = Sheet.blank();
+
+    const samples = D.byType('Sample Character', ['key'])
+      .slice().sort((a, b) => (D.val(a, 'Page') || 0) - (D.val(b, 'Page') || 0));
+
     page.appendChild(el('p', { class: 'muted' }, [
-      'Every part of this sheet is read from the corpus’s own ',
-      el('code', {}, ['^"Vislae"']),
-      ' actor — the six fingers offer every order, heart, forte, soul, foundation and arc the books print, and what you pick brings its own numbers with it. It lives in this tab only: nothing is saved. The creator that walks ',
-      el('i', {}, ['The Key']), '’s own steps is M4.',
+      'The Key illustrates five vislae, each with a portrait and a single sentence. Every part of '
+      + 'that sentence but one is something the books define, so each can start a character of your '
+      + 'own: the four it names are filled in and everything else is yours. The soul is missing on '
+      + 'purpose — a vislae’s soul is secret, and the book never says it out loud.',
     ]));
+
+    page.appendChild(el('div', { class: 'shelf' }, samples.map((sample) => {
+      const { resolved } = window.IsCreator.startFromDescriptor(D.text(sample, 'Descriptor'));
+      return el('div', { class: 'shelf-book start' }, [
+        el('div', { class: 'shelf-title' }, [sample.name]),
+        el('div', { class: 'muted small' }, [
+          (D.val(sample, 'Book') || 'The Key') + ' · page ' + D.val(sample, 'Page'),
+        ]),
+        el('p', { class: 'descriptor' }, [D.text(sample, 'Descriptor')]),
+        el('div', { class: 'chiprow' }, resolved.map((r) => el('span', { class: 'chip' }, [
+          el('span', { class: 'chip-k' }, [r.what]), r.name,
+        ]))),
+        el('div', { class: 'chiprow' }, [
+          el('button', {
+            class: 'btn', type: 'button',
+            onclick: () => {
+              if (window.IsCreator.load() && !confirm('Start from ' + sample.name + '? The draft you have now is discarded.')) return;
+              window.IsCreator.startFrom(sample, ctx);
+            },
+          }, ['Start a vislae from this']),
+          el('a', { class: 'btn ghost', href: ctx.href('books', ['key', sample.id]) }, ['In the book']),
+        ]),
+      ]);
+    })));
+
     page.appendChild(el('div', { class: 'chiprow' }, [
-      el('button', {
-        class: 'btn ghost', type: 'button',
-        onclick: () => { scratch = Sheet.blank(); container.innerHTML = ''; renderVislae(container, path, ctx); },
-      }, ['Start over']),
+      el('a', { class: 'btn ghost', href: ctx.href('creator', ['begin']) }, ['Or begin with nothing decided']),
     ]));
-    const host = el('div', {});
-    page.appendChild(host);
-    const draw = () => {
-      host.innerHTML = '';
-      host.appendChild(Sheet.render(scratch, draw));
-    };
-    draw();
   }
 
   return [

@@ -149,5 +149,29 @@ window.IsEntity = (function () {
     ]);
   }
 
-  return { render, card, link, sun, sunClass, SUNS };
+  // The page a forte's path is printed on. The corpus holds the abilities but not the
+  // edges between them — the book draws those as a diagram — so where the page image is
+  // present it is shown as printed, and where it is not, the panel says so rather than
+  // implying an order the data does not have.
+  function slug(name) {
+    return String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  function fortePath(forte) {
+    const src = 'assets/art/fortes/' + slug(forte.name) + '.webp';
+    const page = D.val(forte, 'Page');
+    const img = el('img', { class: 'forte-page', alt: forte.name + ' — the page its path is printed on', src });
+    const box = el('details', { class: 'guide fortepath' }, [
+      el('summary', {}, ['The path, as the book prints it',
+        page ? el('span', { class: 'muted small' }, [' · The Key, page ' + page]) : null]),
+      el('div', {}, [img]),
+    ]);
+    // A deployment that does not carry the pages shows no panel at all, rather than one
+    // that opens on nothing. The abilities are listed either way.
+    box.hidden = true;
+    img.addEventListener('load', () => { box.hidden = false; });
+    return box;
+  }
+
+  return { render, card, link, sun, sunClass, fortePath, slug, SUNS };
 })();

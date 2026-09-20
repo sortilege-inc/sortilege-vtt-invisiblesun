@@ -378,3 +378,22 @@ label.btn { display: inline-block; }
   .page { border: none; background: #fff; }
   .card, .pool, .counter { break-inside: avoid; }
 }
+
+/* the page a forte's path is printed on */
+.forte-page { display: block; width: 100%; max-width: 46rem; margin: 0.4rem auto; border: 1px solid var(--rule); background: #fff; }
+.fortepath > summary { font-family: var(--display); }
+
+/* the five starts */
+.shelf-book.start { background: var(--page-2); }
+.shelf-book.start .descriptor { font-style: italic; margin: 0.5rem 0; }
+.chip {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: baseline;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.86rem;
+  background: var(--page);
+}
+.chip-k { font-family: var(--display); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
