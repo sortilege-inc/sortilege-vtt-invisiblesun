@@ -9,6 +9,7 @@ window.VttSiteTabs = (function () {
   const Data = window.VttData;          // the loader (engine): which files a book costs
   const D = window.IsData;              // the corpus (system): what is in them
   const E = window.IsEntity;
+  const Sheet = window.IsSheet;
   const Site = () => window.VttSite;
 
   function soon(container, what) {
@@ -297,16 +298,50 @@ window.VttSiteTabs = (function () {
     ]);
   }
 
+  // ── the sheet ──────────────────────────────────────────────────────
+  // One vislae, live, in this browser and nowhere else: every control works and
+  // nothing is saved. M5 seeds it from the five vislae The Key illustrates.
+  let scratch = null;
+
+  function renderVislae(container, path, ctx) {
+    const page = el('div', { class: 'page' });
+    container.appendChild(page);
+    page.appendChild(el('h2', {}, ['A vislae']));
+
+    const need = Sheet.BOOKS.filter((b) => !Data.has(b, 'main'));
+    if (need.length) {
+      page.appendChild(el('div', { class: 'empty' }, ['Fetching the books a character is made from…']));
+      Data.ready(Sheet.BOOKS, ['main']).then(() => {
+        container.innerHTML = '';
+        renderVislae(container, path, ctx);
+      });
+      return;
+    }
+    if (!scratch) scratch = Sheet.blank();
+    page.appendChild(el('p', { class: 'muted' }, [
+      'Every part of this sheet is read from the corpus’s own ',
+      el('code', {}, ['^"Vislae"']),
+      ' actor — the six fingers offer every order, heart, forte, soul, foundation and arc the books print, and what you pick brings its own numbers with it. It lives in this tab only: nothing is saved. The creator that walks ',
+      el('i', {}, ['The Key']), '’s own steps is M4.',
+    ]));
+    page.appendChild(el('div', { class: 'chiprow' }, [
+      el('button', {
+        class: 'btn ghost', type: 'button',
+        onclick: () => { scratch = Sheet.blank(); container.innerHTML = ''; renderVislae(container, path, ctx); },
+      }, ['Start over']),
+    ]));
+    const host = el('div', {});
+    page.appendChild(host);
+    const draw = () => {
+      host.innerHTML = '';
+      host.appendChild(Sheet.render(scratch, draw));
+    };
+    draw();
+  }
+
   return [
     { id: 'books', label: 'The books', render: renderBooks },
-    {
-      id: 'vislae',
-      label: 'Vislae',
-      render: (c) => soon(c, {
-        title: 'Vislae',
-        note: 'The five vislae The Key illustrates, each a start for a character of your own — M5.',
-      }),
-    },
+    { id: 'vislae', label: 'Vislae', render: renderVislae },
     {
       id: 'creator',
       label: 'Make a vislae',

@@ -46,6 +46,23 @@ window.IsData = (function () {
 
   const top = (bid) => ((book(bid) || {}).entities || []).map(entity).filter(Boolean);
 
+  // Every entity of one type across a set of books. Indexed once per set of books, and
+  // thrown away when another book is loaded, because that set has changed.
+  const typeIndex = {};
+  let indexedFor = '';
+  function byType(type, bookIds) {
+    const key = (bookIds || []).join(',') + '|' + Object.keys(T().loaded || {}).length;
+    if (indexedFor !== key) {
+      for (const k in typeIndex) delete typeIndex[k];
+      all(bookIds).forEach((e) => {
+        if (!e.type) return;
+        (typeIndex[e.type] = typeIndex[e.type] || []).push(e);
+      });
+      indexedFor = key;
+    }
+    return (typeIndex[type] || []).slice();
+  }
+
   function prop(e, name) {
     return e && (e.props || []).find((p) => p.name === name) || null;
   }
@@ -227,6 +244,6 @@ window.IsData = (function () {
 
   return {
     T, index, books, book, indexBook, entity, children, all, top, prop, val, text,
-    outline, node, trail, collections, notesFor, notesByPage, hasNotes, search, excerpt, DEPTH,
+    outline, node, trail, collections, byType, notesFor, notesByPage, hasNotes, search, excerpt, DEPTH,
   };
 })();
