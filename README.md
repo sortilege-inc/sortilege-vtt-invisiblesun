@@ -24,7 +24,7 @@ code on `gm/play.html` and play from their own sheet.
 | M4 — the character creator | **landed** (2026-09-20) |
 | M5 — the five sample vislae as starts | **landed** (2026-09-20) |
 | M6 — deployed: GitHub Pages, `actuality.sortilege.online` | **landed** (2026-09-20) |
-| G1–G5 — **the GM's table** under `gm/`: the Narrative (mode and the GM's scenes), the Party and live sheets with the book's d10 roll, the Bestiary, Rules & Books, the Path of Suns as a panel and a board, the map table, the player's page, sessions through a Worker | **landed** (2026-09-20); deploying the Worker is the owner's step |
+| G1–G5 — **the GM's table** under `gm/`: the Narrative (mode and the GM's scenes), the Party and live sheets with the book's d10 roll, the Bestiary, Rules & Books, the Path of Suns as a panel and a board, the map table, the player's page, sessions through a Worker | **landed** (2026-09-20); Worker deployed 2026-09-21 |
 | M7 — the sheet and the walk redesigned: decision first with the book beside it, cards that say what they are, finders for the decks, a roster, the sheet as a sheet, mobile | **landed** (2026-09-20) |
 
 ## Running it

@@ -258,14 +258,14 @@ server.
 **Phase two — the GM's table — has landed, G1–G5**, on the engine phase one left in place. The
 site is live at https://actuality.sortilege.online/; the GM's page is `gm/`, the board
 `gm/path.html`, the table `gm/vtt.html`, the player's page `gm/play.html`. Sessions were proven
-against `wrangler dev`; **deploying the Worker is the owner's step:**
+against `wrangler dev`, and **the Worker is deployed** (owner, 2026-09-21):
+`https://sortilege-vtt-invisiblesun.sortilege.workers.dev`, set in `engine/config.js`
+`worker.deployed`; `wrangler.jsonc` allows `actuality.sortilege.online` and the github.io origin.
+To redeploy after a change to `engine/ops.js` or `system/invisiblesun/ops.js`:
 
 ```bash
 cd worker && npx wrangler deploy
 ```
-
-then put the Worker's URL in `engine/config.js` (`worker.deployed`). `wrangler.jsonc` already
-allows `actuality.sortilege.online` and the github.io origin.
 
 Open, none blocking:
 - **Enforce HTTPS** on Pages once GitHub's certificate for the domain lands.
