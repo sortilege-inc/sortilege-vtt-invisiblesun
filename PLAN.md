@@ -131,14 +131,20 @@ no edges.
   this repo is public while the corpus repo is private. The owner's call on seeing that: **no
   diagrams, and encode the path-dependence in the corpus instead**, so our own interface diagrams
   can be drawn from data — an image is not DSL-legal content.
-- **Done.** `^"Forte Ability"` now declares `^"Follows"`, and the corpus carries **289 edges
-  across 30 fortes** (`titterpig-dsl-invisiblesun` `da87e78`). The edges were read off the page
-  renders as a conversion source and gated from both sides by
+- **Done.** `^"Forte Ability"` now declares `^"Follows"`, and the corpus carries **303 edges
+  across all 31 fortes** (`titterpig-dsl-invisiblesun` `da87e78`, completed in `0884c15`). The
+  edges were read off the page renders as a conversion source and gated from both sides by
   `support/scripts/verify_forte_paths.py`; no image is referenced by the corpus or shipped by
   this repo. The site draws the tree itself, in SVG, from those edges.
-- *Writhes And Squirms* has no path: its diagram is on The Key p139, one page past the run the
-  conversion extracted. Declared in the corpus with that reason; the site says so where it would
-  otherwise draw.
+- **Checked against the printed books (owner, 2026-09-20).** Every forte diagram is in The Key,
+  one per odd page 77–137. The owner read ten of them out of the physical copy — the one forte
+  with no edges, the four whose two starting abilities no sentence confirms, the two the surviving
+  geometry could not locate, and the three with the most crowded bands. **Nine matched the corpus
+  edge for edge.** *Breathes Runes* was corrected: one band is a full crossing, read here as two
+  straight verticals. *Writhes And Squirms* — whose diagram is the one page the conversion never
+  rasterised — now has all twelve of its edges, so `no_diagram` is empty and no forte shows the
+  sentence alone. `build/check_shape.py` gained five assertions on `^"Follows"`, counted against
+  the corpus's own lines, because a displaced edge loses no string and would simply draw flat.
 
 **D4 — Vance spell class.** The 1st-degree Vance takes six spells "from those we can fit into our
 minds (alpha or beta class)". Class is the card's *size* on the Vance deck and is not in the
@@ -217,14 +223,16 @@ server.
 | 6 | Corpus gaps found while building are reported to `titterpig-dsl-invisiblesun/TODO.md`, never patched in `data/` or in the tool | `data/` is generated; regenerating is the only way to change it. |
 | 7 | **(owner, D1)** The missing character fields are added to the corpus BASE's `^"Vislae"` ACTOR, not hand-listed in the tool; its own commit in the corpus repo before M3, gates green in the message | The sheet is derived from the ACTOR's declarations; a hand list in the tool would be a second, drifting copy of the character. |
 | 8 | **(owner, D2)** The five `^"Sample Character"` entities are creator *starts*, fixing only the parts of the printed descriptor that resolve to an entity name | The books give a name and a sentence, nothing more; fixing what resolves invents nothing, and an unresolved phrase leaves the step open rather than guessed. |
-| 9 | **(owner, D3)** The forte's flowchart image sits beside the flat ability list with the forte's own sentence verbatim; the starting pick is the first ability, or a pick among the first ones where the sentence says so. *Writhes And Squirms* has no chart and shows the sentence alone | The path is printed as a diagram and the corpus holds no edges; showing the diagram is faithful, inferring edges is not. |
+| 9 | **(owner, D3 — decided, then reversed the same day)** First: show the archive's flowchart image beside the ability list. Reversed on seeing them: **no images at all; encode the path-dependence in the corpus** and let the site draw its own tree in SVG from the edges | The archive's "charts" are whole printed pages, some cutting body text mid-column, and this repo is public while the corpus is private — and an image is not DSL-legal content, so the corpus could not hold one either way. Edges between entities the corpus already had can be gated from both sides; a picture cannot. |
 | 10 | **(owner, D4)** All 50 Vance spells are offered unfiltered with the book's "alpha or beta class" limit quoted beside the picker; `^"Class"` goes to the corpus TODO | Class is the card's physical size and is not in the corpus; a guessed filter would silently remove legal choices. |
 | 11 | **(owner, D5)** Black chrome with the sun colours as accents, cream reading pages, Cormorant Garamond / Cinzel, margin notes in the ink from each note's own `Colour` | The books' own scheme; the note colour is already content in the corpus, so it is read, not chosen. |
 | 12 | **(owner, D6)** `invisiblesun.sortilege.online` by Pages CNAME at M6; nothing hard-codes a single origin | TEETH's CNAME commit was rejected once because the Worker admitted one origin; this one assumes two from the start. |
 | 13 | A RULES block's lines are lifted to quoted strings in place before tokenizing (`parse_dsl.lift_rule_lines`), and the gate lifts the same way before counting | The tokenizer drops the punctuation free text is made of, so a rule line cannot be rebuilt from tokens — and a rebuilt line would not be verbatim, which is the one thing it must be. |
 | 15 | The creator **counts against the book's sentence rather than enforcing it** wherever a grant is stated only in prose (a Vance's grimoire of six spells, a Maker's crafted object). The order's own first-degree abilities are printed verbatim above the pickers, and the picker shows how many have been taken | D4's principle: the corpus does not carry a Vance spell's class, so a filter would silently remove legal choices. The two places the creator *does* refuse — a stat's points and a heart's pair of skills — are refusals the book states as numbers the corpus carries or a constant citing its sentence. |
 | 16 | How each order is spoken of in the describing sentence is a five-entry constant citing *Step 1: Choose an Order* (The Key p21), which states them in one sentence | Without it the sentence reads "of the Order of Vance"; the book, and its own five sample descriptors, say "of the Order of the Vance" but "of the Order of Makers". |
-| 14 | `build/check_shape.py` joins the build: 42 assertions on the fields the site reads, each against a count grepped from the corpus, and it runs in `build.sh` | The string gate is blind to a string on the wrong field. `^"Level" ENUM "subsection"` parsed as a property with no value plus a loose string: 3,726 rule levels and 3,532 note kinds attached to nothing, with every string still round-tripping. The parser is fixed; this is what would catch the next one. |
+| 14 | `build/check_shape.py` joins the build: 47 assertions on the fields the site reads, each against a count grepped from the corpus, and it runs in `build.sh` | The string gate is blind to a string on the wrong field. `^"Level" ENUM "subsection"` parsed as a property with no value plus a loose string: 3,726 rule levels and 3,532 note kinds attached to nothing, with every string still round-tripping. The parser is fixed; this is what would catch the next one. |
+| 17 | **(owner)** Ten forte diagrams checked against the **physical copies** of The Key, chosen by what nothing else could settle: the forte with no edges, the four whose two starting abilities no sentence confirms, the two the surviving geometry could not locate, and the three with the most crowded bands | The edges were read from rasterised pages and the source PDFs are gone, so the print was the only independent witness left. It paid: nine matched edge for edge, *Breathes Runes* had a band wrong, and *Writhes And Squirms* — the one page the conversion never rasterised — got all twelve of its edges. |
+| 18 | `check_shape.py` gains five assertions on `^"Follows"`, counted against the corpus's own lines, including that the BASE declares the field exactly once with no body | A displaced edge loses no string, so `verify_data` cannot see it — the tree would simply come out flat. Proved by removing one edge from `data/key.js`: 302 vs 303, gate exits 1. |
 
 ## STOPPED HERE — to resume
 

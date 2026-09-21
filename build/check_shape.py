@@ -130,6 +130,32 @@ def main():
         check("each carries a level", len([a for a in abil if val(a, "Level") is not None]), len(abil))
         check("each carries a sun", len([a for a in abil if val(a, "Color")]), len(abil))
 
+    # ── the forte paths: the site draws its tree from these and nothing else ──
+    # A displaced ^"Follows" would not lose a string, so verify_data cannot see it; the tree
+    # would simply come out flat. Counted against the corpus's own ^"Follows" lines.
+    follows = [p for e in ents.values() for p in e.get("props", []) if p["name"] == "Follows"]
+    # the BASE declares the field once with no body; every other site is an instance with edges
+    decl = [p for p in follows if not p.get("items")]
+    check("the BASE declares ^\"Follows\" once, with no edges", len(decl),
+          grep_count(corpus, '^ *\\^"Follows" LIST OF [^[]*$', P + "core-base.ttrpg"))
+    inst = [p for p in follows if p.get("items")]
+    check("abilities that follow another", len(inst),
+          sum(grep_count(corpus, '^ *\\^"Follows" LIST OF .*\\[', P + fn)
+              for fn in ("fortes.ttrpg",)))
+    check("the edges they carry", sum(len(p["items"]) for p in inst),
+          sum(len(re.findall(r'#[A-Za-z0-9]+ \^"[^"]+"',
+                             re.search(r'\[(.*)\]', line).group(1)))
+              for line in open(os.path.join(corpus, P + "fortes.ttrpg"), encoding="utf-8")
+              if re.match(r'\s*\^"Follows" LIST OF .*\[', line)))
+    fortes = by_type.get("Forte", [])
+    check("every forte has a path", len([f for f in fortes if any(
+        any(p["name"] == "Follows" for p in ents[c].get("props", [])) for c in f["children"])]),
+        len(fortes))
+    roots = {f["name"]: len([c for c in f["children"]
+                             if not any(p["name"] == "Follows" for p in ents[c].get("props", []))])
+             for f in fortes}
+    check("each path starts from one or two abilities", sorted(set(roots.values())), [1, 2])
+
     # ── the character sheet's own type ──
     vislae = next((e for e in ents.values() if e["form"] == "ACTOR"), None)
     check("the Vislae ACTOR is in the data", bool(vislae and vislae["name"] == "Vislae"), True)
