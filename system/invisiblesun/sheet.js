@@ -366,18 +366,28 @@ window.IsSheet = (function () {
     const grid = el('div', { class: 'cards' });
     const count = el('span', { class: 'muted small' });
     const LIMIT = 48;
+    const pick = (c) => {
+      v.lists[name] = (v.lists[name] || []).concat([c.id]);
+      redraw();
+    };
+    // the rows the filters leave — all of them, not only the ones the grid shows
+    let rows = [];
+    // draw one from those rows: what the deck does when a card is dealt rather than chosen
+    const random = el('button', { class: 'btn tiny', type: 'button', title: 'Draw one at random from what the filters leave' }, ['Draw one']);
+    random.addEventListener('click', () => {
+      if (rows.length) pick(rows[Math.floor(Math.random() * rows.length)]);
+    });
     function apply() {
       const q = st.q.toLowerCase();
-      const rows = avail.filter((c) => (!st.sun || D.val(c, 'Color') === st.sun)
+      rows = avail.filter((c) => (!st.sun || D.val(c, 'Color') === st.sun)
         && (st.level === '' || D.val(c, 'Level') === Number(st.level))
         && (!st.deck || D.val(c, 'Deck') === st.deck)
         && (!q || (c.name + ' ' + (D.text(c, 'Effect') || D.text(c, 'Description') || '')).toLowerCase().indexOf(q) !== -1));
       grid.innerHTML = '';
       count.textContent = rows.length === avail.length ? avail.length + ' to choose from' : rows.length + ' of ' + avail.length;
-      rows.slice(0, LIMIT).forEach((c) => grid.appendChild(E.card(c, () => {
-        v.lists[name] = (v.lists[name] || []).concat([c.id]);
-        redraw();
-      })));
+      random.disabled = !rows.length;
+      random.textContent = rows.length && rows.length < avail.length ? 'Draw one of ' + rows.length : 'Draw one';
+      rows.slice(0, LIMIT).forEach((c) => grid.appendChild(E.card(c, () => pick(c))));
       if (rows.length > LIMIT) grid.appendChild(el('div', { class: 'muted small' }, ['The first ' + LIMIT + ' — narrow it down.']));
     }
     function sel(label, key, values, fmt) {
@@ -394,6 +404,7 @@ window.IsSheet = (function () {
       suns.length > 1 ? sel('suns', 'sun', suns) : null,
       levels.length > 1 ? sel('levels', 'level', levels, (x) => 'level ' + x) : null,
       decks.length > 1 ? sel('decks', 'deck', decks) : null,
+      random,
       count,
     ]);
     apply();
