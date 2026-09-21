@@ -10,13 +10,14 @@
   const CFG = window.VttConfig;
 
   const WIDE = 1100;
-  const DEFAULT_SLOTS = ['tracker', 'scene', 'inspector'];
+  // the three panels a fresh browser opens on: the system names them in engine/config.js
+  const DEFAULT_SLOTS = (CFG.defaultSlots && CFG.defaultSlots.length === 3) ? CFG.defaultSlots.slice() : ['tracker', 'scene', 'inspector'];
   const main = document.getElementById('main');
   const nav = document.getElementById('nav');
   const brand = document.getElementById('brand');
 
   let mode = null;
-  let single = 'tracker';
+  let single = DEFAULT_SLOTS[0];
   let ctxs = [];
 
   function slots() {

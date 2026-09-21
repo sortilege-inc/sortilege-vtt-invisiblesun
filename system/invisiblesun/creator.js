@@ -23,7 +23,7 @@ window.IsCreator = (function () {
   const Roster = window.IsRoster;
   const C = () => Sheet.controls;
 
-  const FILE_KIND = 'sortilege-vtt-character';
+  const FILE_KIND = Sheet.FILE_KIND;
 
   // ── the walk ───────────────────────────────────────────────────────
   // `texts` are entity names in The Key. Each step shows them verbatim, in the order the
@@ -69,16 +69,7 @@ window.IsCreator = (function () {
     };
   }
 
-  function readCharacter(obj) {
-    if (!obj || obj.kind !== FILE_KIND) throw new Error('That is not a character file.');
-    if (obj.system && obj.system !== ((window.VttConfig || {}).system || 'invisiblesun')) {
-      throw new Error('That character is for ' + obj.system + ', not Invisible Sun.');
-    }
-    const v = obj.character;
-    if (!v || typeof v !== 'object') throw new Error('The file carries no character.');
-    delete v.id;
-    return Sheet.complete(v);
-  }
+  const readCharacter = (obj) => Sheet.readFile(obj);
 
   function download(v) {
     const blob = new Blob([JSON.stringify(toFile(v), null, 2)], { type: 'application/json' });

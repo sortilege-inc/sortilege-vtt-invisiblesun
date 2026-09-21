@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../">
+<title>Invisible Sun — the Path of Suns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/invisiblesun.css">
+<link rel="stylesheet" href="assets/css/invisiblesun-gm.css">
+</head>
+<body class="board">
+<header class="board-head">
+  <div class="brand"><div class="brand-title">The Path of Suns</div><div class="brand-sub" id="board-sub">the Sooth Deck, as it lies</div></div>
+</header>
+<main class="board-main" id="board-main"></main>
+
+<script src="engine/config.js"></script>
+<script src="engine/bus.js"></script>
+<script src="engine/ops.js"></script>
+<script src="system/invisiblesun/ops.js"></script>
+<script src="engine/state.js"></script>
+<script src="engine/render.js"></script>
+<script src="engine/data.js"></script>
+<script src="data/index.js"></script>
+<script src="data/base.js"></script>
+<script src="data/key.js"></script>
+<script src="data/decks.js"></script>
+<script src="system/invisiblesun/data.js"></script>
+<script src="system/invisiblesun/entity.js"></script>
+<script src="system/invisiblesun/sooth.js"></script>
+<script src="engine/session.js"></script>
+<script>
+  // ?view=player: the meanings stay with the GM; the card, its suns and what it does to
+  // magic are the table's and show. The page follows the shared state like any window.
+  (function () {
+    const player = new URLSearchParams(location.search).get('view') === 'player';
+    if (player) document.body.classList.add('player');
+    document.getElementById('board-sub').textContent = player ? 'the Sooth Deck, as it lies' : 'the Sooth Deck, as it lies · the GM’s board';
+    window.IsSooth.renderBoard(document.getElementById('board-main'), { player });
+  })();
+</script>
+</body>
+</html>

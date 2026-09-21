@@ -9,9 +9,12 @@ window.VttConfig = {
   // rules, the sample vislae, the character creator. The gm/ pages come in a later phase
   // and will carry <base href="../"> so every path stays root-relative.
   pages: { site: './', gm: 'gm/', table: 'gm/vtt.html', play: 'gm/play.html' },
-  // what a fresh browser opens on until a narrative is created or restored (phase two)
+  // what a fresh browser opens on until a narrative is created or restored
   defaultCampaign: { name: 'A new narrative', modules: [], books: [] },
-  // The Worker that holds player sessions (phase two). Empty = sessions disabled.
+  // the three panels the GM page opens on (engine/app.js)
+  defaultSlots: ['narrative', 'party', 'inspector'],
+  // The Worker that holds player sessions. Served from localhost the app talks to
+  // `wrangler dev`; deployed, to the URL below. Empty = sessions disabled.
   worker: {
     deployed: '',
     local: 'http://localhost:8787',

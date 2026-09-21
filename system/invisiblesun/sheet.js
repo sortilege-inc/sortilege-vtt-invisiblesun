@@ -663,8 +663,240 @@ window.IsSheet = (function () {
     return box;
   }
 
+  // ══ in play: a party member, the live sheet, the roll ══════════════
+  // On the GM's page and the player's, a vislae is a party member: the character file
+  // the site wrote (`character`), plus what play changes (`live`): the harm and
+  // advancement values, bene spent from each pool, and nothing else. The engine's
+  // `setPartyLive` carries the changes; a player may send it for their own member.
+  const FILE_KIND = 'sortilege-vtt-character';
+  const State = () => window.VttState;
+  const Bus = () => window.VttBus;
+  const actorId = () => (actor() || {}).id || null;
+
+  // The file the site's creator writes, checked and completed.
+  function readFile(obj) {
+    if (!obj || obj.kind !== FILE_KIND) throw new Error('That is not a character file.');
+    const sys = (window.VttConfig || {}).system || 'invisiblesun';
+    if (obj.system && obj.system !== sys) throw new Error('That character is for ' + obj.system + ', not Invisible Sun.');
+    if (obj.version > 1) throw new Error('That character was saved by a newer build.');
+    const v = obj.character;
+    if (!v || typeof v !== 'object') throw new Error('The file carries no character.');
+    delete v.id;
+    return complete(v);
+  }
+
+  function memberFrom(v, source) {
+    const values = Object.assign({}, v.values || {});
+    return {
+      id: State().genId('pc'),
+      templateId: actorId(),                    // the type every vislae is: the corpus's ACTOR
+      name: v.name || 'A vislae',
+      character: v,
+      live: { values, spent: {} },              // spent: bene taken from each pool since the last refresh
+      notes: '', playerNotes: '',
+      source: source || null,
+    };
+  }
+
+  function readMember(obj, fileName) {
+    const v = readFile(obj);
+    return memberFrom(v, { kind: 'file', name: fileName || null, exportedAt: obj.exported || null, loadedAt: new Date().toISOString() });
+  }
+
+  // The member as played, right now, as the same kind of file the site reads back.
+  function downloadMember(m) {
+    const v = JSON.parse(JSON.stringify(m.character || {}));
+    v.name = m.name || v.name;
+    v.values = Object.assign({}, v.values || {}, (m.live && m.live.values) || {});
+    const file = {
+      kind: FILE_KIND, version: 1, system: (window.VttConfig || {}).system || 'invisiblesun',
+      corpus: (D.index() || {}).corpus || null, exported: new Date().toISOString(), name: v.name || '', character: v,
+    };
+    const blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (v.name || 'vislae').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.invisiblesun-character.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  }
+
+  function member(id) {
+    return ((State().state || {}).party || []).find((m) => m.id === id) || null;
+  }
+
+  function patchLive(m, key, value) {
+    const next = Object.assign({}, (m.live || {})[key] || {}, value);
+    State().commit('setPartyLive', [m.id, { [key]: next }]);
+  }
+
+  // ── the roll ──
+  // "When you have a total, you subtract the venture from the challenge. If the result is
+  //  0 or less, you don't need to roll. If the result is 1 or higher, that's the number"
+  //  you need on the die (Venture and Challenge, The Key p24). "An enhancement is an
+  //  additional die you get to roll ... Rolling a success on either die results in a
+  //  success." (Bonuses and Enhancements, The Key p74.) "A bene adds +1 to the action ...
+  //  a character can use only one bene per action." (Using Bene, The Key p30.)
+  const DIE = 10;
+  function doRoll(m, o) {
+    const challenge = o.challenge == null || isNaN(o.challenge) ? null : Number(o.challenge);
+    const venture = (Number(o.venture) || 0) + (o.bene ? 1 : 0);
+    const dice = Array.from({ length: 1 + (Number(o.enhancements) || 0) }, () => 1 + Math.floor(Math.random() * DIE));
+    const target = challenge == null ? null : challenge - venture;
+    const entry = {
+      at: new Date().toISOString(), kind: 'roll', memberId: m.id, who: m.name,
+      what: o.what || '', challenge, venture, bene: o.bene || null, enhancements: Number(o.enhancements) || 0,
+      dice, target,
+      success: target == null ? null : target <= 0 ? true : dice.some((d) => d >= target),
+      noRoll: target != null && target <= 0,
+    };
+    State().commit('appendLog', [entry]);
+    Bus().emit('roll', entry);
+    return entry;
+  }
+
+  function rollLine(entry) {
+    const cls = entry.success === true ? ' ok' : entry.success === false ? ' fail' : '';
+    return el('div', { class: 'roll-line' + cls }, [
+      el('span', { class: 'roll-who' }, [entry.who + (entry.what ? ' · ' + entry.what : '')]),
+      el('span', { class: 'roll-dice' }, (entry.dice || []).map((d) => el('span', { class: 'die' + (entry.target != null && d >= entry.target ? ' hit' : '') }, [String(d)]))),
+      el('span', { class: 'roll-sum' }, [
+        entry.challenge == null ? 'venture ' + entry.venture + ', challenge not stated'
+          : entry.noRoll ? 'challenge ' + entry.challenge + ' − venture ' + entry.venture + ' ≤ 0: no roll needed'
+            : 'needs ' + entry.target + ' (challenge ' + entry.challenge + ' − venture ' + entry.venture + ')',
+      ]),
+      entry.bene ? el('span', { class: 'muted small' }, ['bene from ' + entry.bene]) : null,
+      entry.enhancements ? el('span', { class: 'muted small' }, ['+' + entry.enhancements + (entry.enhancements === 1 ? ' die' : ' dice')]) : null,
+      entry.success === true ? el('b', {}, ['success']) : entry.success === false ? el('b', {}, ['failure']) : null,
+    ]);
+  }
+
+  // ── the live sheet ──
+  function live(m, opts) {
+    const o = opts || {};
+    const v = complete(m.character || blank());
+    const d = derive(v);
+    const lv = m.live || { values: {}, spent: {} };
+    const values = lv.values || {};
+    const spent = lv.spent || {};
+    const sp = spec();
+    const box = el('article', { class: 'sheet live' });
+
+    // on the player's page, the card that lies on the Path right now, above the sheet
+    if (o.player && window.IsSooth) {
+      const strip = window.IsSooth.strip();
+      if (strip) box.appendChild(strip);
+    }
+
+    box.appendChild(el('header', { class: 'sheet-head' }, [
+      el('h2', {}, [m.name]),
+      el('div', { class: 'sentence' }, [sentence(v, d) || 'a vislae']),
+      el('div', { class: 'muted small' }, [
+        [d.degreeNow ? d.degreeNow.name : null, d.soul && !o.player ? 'soul: ' + d.soul.name : null].filter(Boolean).join(' · '),
+      ]),
+    ]));
+
+    // the pools: divided on the sheet, spent at the table
+    const poolTile = (p, max) => {
+      const used = spent[p] || 0;
+      const cur = Math.max(0, max - used);
+      return el('div', { class: 'pool live' + (cur === 0 ? ' empty' : '') }, [
+        el('div', { class: 'pool-n' }, [p]),
+        el('div', { class: 'pool-cur' }, [el('b', {}, [String(cur)]), el('span', { class: 'muted small' }, [' / ' + max])]),
+        el('div', { class: 'chiprow tight' }, [
+          el('button', { class: 'btn tiny', type: 'button', disabled: cur <= 0 || null, title: 'Spend a bene', onclick: () => patchLive(m, 'spent', { [p]: used + 1 }) }, ['spend']),
+          el('button', { class: 'btn ghost tiny', type: 'button', disabled: used <= 0 || null, title: 'Refresh one', onclick: () => patchLive(m, 'spent', { [p]: used - 1 }) }, ['+1']),
+        ]),
+      ]);
+    };
+    box.appendChild(section('Pools', 'a bene is +1 to the venture, one per action', [
+      el('div', { class: 'pools-wrap' }, [['Certes', CERTES_POOLS, d.certes], ['Qualia', QUALIA_POOLS, d.qualia]].map(([stat, names, total]) => el('div', { class: 'poolgroup' }, [
+        el('div', { class: 'poolgroup-h' }, [el('span', { class: 'prop-k' }, [stat + ' pools']), el('span', { class: 'muted small' }, [total != null ? stat + ' ' + total : ''])]),
+        el('div', { class: 'pools' }, names.map((p) => poolTile(p, v.pools[p] || 0))),
+      ]))),
+      el('div', { class: 'chiprow tight' }, [
+        el('button', { class: 'btn ghost tiny', type: 'button', onclick: () => State().commit('setPartyLive', [m.id, { spent: {} }]) }, ['Refresh every pool']),
+        el('span', { class: 'muted small' }, ['Sortilege is spent for enhancements: each is +1 die.']),
+      ]),
+    ]));
+
+    // harm and advancement
+    const strip = sp.tracks.concat(sp.counters).filter((c) => STATS.indexOf(c.name) === -1 && c.name !== 'Degree');
+    box.appendChild(section('Harm and advancement', null, [
+      el('div', { class: 'counters' }, strip.map((c) => el('div', { class: 'counter' }, [
+        el('div', { class: 'pool-n' }, [c.name]),
+        stepper(values[c.name] || 0, c.min, c.max != null ? c.max : null, (n) => patchLive(m, 'values', { [c.name]: n })),
+      ]))),
+      el('div', { class: 'muted small' }, ['One Joy and one Despair make a Crux; Crux advances the order and the forte, Acumen everything else.']),
+    ]));
+
+    // the roll
+    const sortCur = Math.max(0, (v.pools.Sortilege || 0) - (spent.Sortilege || 0));
+    const what = el('input', { type: 'text', class: 'text small', placeholder: 'what they attempt' });
+    const challenge = el('input', { type: 'number', class: 'text small num', placeholder: 'challenge', min: '0', max: '20' });
+    const venture = el('input', { type: 'number', class: 'text small num', placeholder: 'venture', value: '0', min: '-5', max: '20' });
+    const bene = el('select', { class: 'scope tiny' }, [el('option', { value: '' }, ['no bene'])]);
+    CERTES_POOLS.concat(QUALIA_POOLS).forEach((p) => {
+      const cur = Math.max(0, (v.pools[p] || 0) - (spent[p] || 0));
+      bene.appendChild(el('option', { value: p, disabled: cur <= 0 || null }, ['bene from ' + p + ' (' + cur + ')']));
+    });
+    const enh = el('select', { class: 'scope tiny' }, Array.from({ length: sortCur + 1 }, (_, i) => el('option', { value: String(i) }, [i === 0 ? 'no enhancement' : '+' + i + (i === 1 ? ' die' : ' dice') + ' from Sortilege'])));
+    const rollLog = el('div', { class: 'roll-log' });
+    (((State().state || {}).log) || []).filter((x) => x.kind === 'roll' && x.memberId === m.id).slice(-5).reverse().forEach((x) => rollLog.appendChild(rollLine(x)));
+    const go = el('button', { class: 'btn', type: 'button' }, ['Roll']);
+    go.addEventListener('click', () => {
+      const b = bene.value || null;
+      const n = Number(enh.value) || 0;
+      const patch = {};
+      if (b) patch[b] = (spent[b] || 0) + 1;
+      if (n) patch.Sortilege = (spent.Sortilege || 0) + n;
+      if (Object.keys(patch).length) patchLive(m, 'spent', patch);
+      const entry = doRoll(m, { what: what.value.trim(), challenge: challenge.value === '' ? null : challenge.value, venture: venture.value, bene: b, enhancements: n });
+      rollLog.prepend(rollLine(entry));
+    });
+    box.appendChild(section('Roll', 'challenge − venture is the number to roll; any die that meets it succeeds', [
+      el('div', { class: 'roll-bar' }, [what, challenge, venture, bene, enh, go]),
+      rollLog,
+    ]));
+
+    // what they have: the order's and forte's abilities, the magic carried — read here, changed on the site
+    if (d.order || d.forte) {
+      box.appendChild(section('Abilities', null, [
+        d.order ? el('div', {}, [el('div', { class: 'prop-k' }, ['Order · ' + d.order.name]), abilityRows((d.degreeAbilities.length ? d.degreeAbilities.flatMap((g) => g.abilities) : d.orderAbilities), { clip: true })]) : null,
+        d.forte ? el('div', {}, [el('div', { class: 'prop-k' }, ['Forte · ' + d.forte.name]), abilityRows(d.forteAbilities, { clip: true })]) : null,
+      ]));
+    }
+    const carried = sp.lists.filter((l) => (v.lists[l.name] || []).length);
+    if (carried.length) {
+      box.appendChild(section('Carried', null, carried.map((l) => el('div', { class: 'prop' }, [
+        el('div', { class: 'prop-k' }, [l.name]),
+        el('div', { class: 'prop-v chiprow tight' }, (v.lists[l.name] || []).map((id) => {
+          const e2 = D.entity(id);
+          return e2 ? el('button', { class: 'chip ' + E.sunClass(D.val(e2, 'Color')), type: 'button', onclick: () => window.IsOpenEntity && window.IsOpenEntity(e2.id) }, [el('span', { class: 'sun-dot' }), ' ', e2.name]) : null;
+        })),
+      ]))));
+    }
+    const skills = (v.rated.Skills || []).concat(v.rated.Connections || []);
+    if (skills.length) {
+      box.appendChild(section('Skills and connections', null, [el('div', { class: 'chiprow tight' }, skills.map((r) => el('span', { class: 'chip' }, [(r.Skill || r.Connection || '—') + (r.Level != null ? ' ' + r.Level : '')])))]));
+    }
+
+    if (!o.player && !o.preview) {
+      box.appendChild(section('GM notes', 'never sent to players', [
+        el('textarea', { class: 'text', rows: 3, oninput: debounce((ev) => State().commit('setPartyNotes', [m.id, ev.target.value]), 400) }, [m.notes || '']),
+      ]));
+    }
+    if (!o.preview) {
+      box.appendChild(section('Player notes', null, [
+        el('textarea', { class: 'text', rows: 3, oninput: debounce((ev) => State().commit('setPartyPlayerNotes', [m.id, ev.target.value]), 400) }, [m.playerNotes || '']),
+      ]));
+    }
+    return box;
+  }
+
   return {
     spec, blank, complete, derive, sentence, render, facts, blurb, BOOKS,
+    readFile, memberFrom, readMember, downloadMember, member, live, doRoll, rollLine, patchLive, FILE_KIND,
     CERTES_POOLS, QUALIA_POOLS, HEART_SKILLS, SHADOW_SKILL_LEVEL, STARTING_DEGREE, FINGERS, STATS, ORDER_PHRASE,
     // the creator walks the same controls over the same draft
     controls: { stepper, picker, row, textInput, truncate, section, poolsBlock, ratedList, cardPicker, abilityRows, choiceCard },
