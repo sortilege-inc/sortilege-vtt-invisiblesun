@@ -8,8 +8,10 @@ in the browser and writing each out as a file. Plan, decisions and milestones: [
 
 Live at **https://actuality.sortilege.online/** (and the github.io address behind it).
 
-Buildless static site (GitHub Pages). Phase one is the site; the GM's table, maps and
-player sessions come later.
+Buildless static site (GitHub Pages). The site is the books, the roster and the creator; the
+GM's table is under `gm/` — the same engine TEETH's table runs on, with Invisible Sun's own
+panels: the Narrative, the Party, the Path of Suns, the Bestiary. Players join a session by room
+code on `gm/play.html` and play from their own sheet.
 
 ## Status
 
@@ -22,6 +24,7 @@ player sessions come later.
 | M4 — the character creator | **landed** (2026-09-20) |
 | M5 — the five sample vislae as starts | **landed** (2026-09-20) |
 | M6 — deployed: GitHub Pages, `actuality.sortilege.online` | **landed** (2026-09-20) |
+| G1–G5 — **the GM's table** under `gm/`: the Narrative (mode and the GM's scenes), the Party and live sheets with the book's d10 roll, the Bestiary, Rules & Books, the Path of Suns as a panel and a board, the map table, the player's page, sessions through a Worker | **landed** (2026-09-20); deploying the Worker is the owner's step |
 | M7 — the sheet and the walk redesigned: decision first with the book beside it, cards that say what they are, finders for the decks, a roster, the sheet as a sheet, mobile | **landed** (2026-09-20) |
 
 ## Running it
@@ -63,7 +66,14 @@ data/                    GENERATED — window.INVISIBLESUN.books / .entities / .
 engine/                  system-agnostic: render, the on-demand data loader, the site shell,
                          and (for later phases) bus, ops, state, panels, session, table
 system/invisiblesun/     the Invisible Sun module: what a sheet is (sheet.js, derived from the
-                         ACTOR), the walk (creator.js), the roster (roster.js), what the site lists
+                         ACTOR; its live form for play), the walk (creator.js), the roster
+                         (roster.js), the site's tabs (site.js); for the table: the system's own
+                         ops (ops.js), the Path of Suns (sooth.js), the table adapter (table.js),
+                         the panels (panels.js)
+gm/                      the GM's page, the board (path.html), the table (vtt.html), the player's
+                         page (play.html) — each carries <base href="../">
+worker/                  the session rooms (Cloudflare Worker + Durable Object); deploy with
+                         `npx wrangler deploy`, then set engine/config.js worker.deployed
 assets/css/              the look: a black box, cream pages, the nine suns
 ```
 
