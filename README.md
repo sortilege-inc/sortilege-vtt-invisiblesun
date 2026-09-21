@@ -75,6 +75,9 @@ gm/                      the GM's page, the board (path.html), the table (vtt.ht
 worker/                  the session rooms (Cloudflare Worker + Durable Object); deploy with
                          `npx wrangler deploy`, then set engine/config.js worker.deployed
 assets/css/              the look: a black box, cream pages, the nine suns
+assets/art/              the books' own art for the table (owner's call): the Path of Suns cloth
+                         map as the board, the Sooth Deck's sixty cards, the maps of Indigo and
+                         Satyrine — WebP, converted from the GM Tools; nothing here is corpus
 ```
 
 ## Rights

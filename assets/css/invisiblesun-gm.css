@@ -145,11 +145,35 @@ section.scene input.text { width: 100%; font-family: var(--display); font-size: 
 .sooth-listing .sooth-caption { font-style: italic; margin: 0.3rem 0; }
 .sooth-strip { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: 1rem; align-items: start; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--rule); }
 
+/* the cloth map, the cards laid on its suns */
+.sooth-board { position: relative; width: 100%; max-width: 30rem; margin: 0.6rem auto; background-size: 100% 100%; background-repeat: no-repeat; background-color: #f4f1ea; border: 1px solid var(--rule); border-radius: 2px; overflow: visible; }
+.sooth-board.big { max-width: min(46rem, calc((100vh - 8rem) * 2000 / 3070)); margin: 0 auto; }
+.sooth-spot { position: absolute; transform: translate(-50%, -50%); aspect-ratio: 1; border-radius: 50%; }
+.sooth-spot.active { box-shadow: 0 0 0 4px var(--page), 0 0 0 7px var(--this-sun, var(--sun-gold)); }
+.sooth-token { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #0d0c10; border-radius: 50%; cursor: pointer; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45); }
+.sooth-token img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sooth-token:hover, .sooth-token:focus { outline: 3px solid var(--sun-gold); outline-offset: 2px; }
+.sooth-token-name { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: var(--page); font-family: var(--display); font-size: 0.7rem; text-align: center; padding: 0.3rem; }
+.sooth-deck { position: absolute; right: 3%; bottom: 2.5%; width: 12%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45); background: #0d0c10; }
+.sooth-deck img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+.sooth-deck-n { position: absolute; inset: auto 0 6% 0; text-align: center; font-family: var(--display); font-size: 0.8rem; color: var(--page); text-shadow: 0 1px 3px #000; }
+.sooth-hover { cursor: zoom-in; border-bottom: 1px dotted var(--ink-3); }
+.sooth-strip-art, .board-active-art { width: 100%; max-width: 12rem; border-radius: 50%; display: block; cursor: zoom-in; }
+.board-active { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: center; }
+
+/* the zoom: a card under the pointer, at reading size */
+.sooth-zoom { position: fixed; right: 1.2rem; top: 50%; transform: translateY(-50%); z-index: 50; pointer-events: none; background: var(--page); color: var(--ink); border: 1px solid var(--box-rule); border-radius: 2px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55); padding: 0.8rem; max-width: min(46vw, 52rem); }
+.sooth-zoom-in { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: 1rem; align-items: start; }
+.sooth-zoom img { display: block; width: min(70vh, 700px); max-width: 100%; aspect-ratio: 1; border-radius: 50%; }
+.sooth-zoom-name { font-family: var(--display); font-size: 1.3rem; margin-bottom: 0.2rem; }
+@media (max-width: 900px) { .sooth-zoom { right: 0.5rem; left: 0.5rem; max-width: none; } .sooth-zoom-in { grid-template-columns: minmax(0, 1fr); } .sooth-zoom img { width: min(60vw, 60vh); margin: 0 auto; } }
+
 /* the board (path.html) */
 body.board { display: block; background: var(--box); }
 .board-head { padding: 0.8rem 1.4rem; border-bottom: 1px solid var(--box-rule); }
 .board-head .brand-title { font-size: 1.3rem; letter-spacing: 0.2em; }
-.board-main { padding: 1.2rem 1.4rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.2rem; color: var(--box-ink); }
+.board-main { padding: 1.2rem 1.4rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(20rem, 34rem); gap: 1.6rem; align-items: start; color: var(--box-ink); }
+@media (max-width: 1000px) { .board-main { grid-template-columns: minmax(0, 1fr); } }
 .board-main .sooth-path.big .sooth-slot { min-height: 9rem; padding: 0.6rem 0.7rem; background: var(--page); color: var(--ink); }
 .board-main .sooth-path.big .sooth-name { font-size: 1.15rem; }
 .board-main .sooth-path.big .sooth-sun { font-size: 0.72rem; }

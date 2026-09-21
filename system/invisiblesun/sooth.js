@@ -35,6 +35,23 @@ window.IsSooth = (function () {
     Adept: 'Play another card on the next sun',
   };
 
+  // The board is the Path of Suns cloth map (GM Tools, `assets/art/sooth/path-of-suns.webp`,
+  // 2000×3070), and the nine suns are positions on it as fractions of its width and height
+  // — the centres of the nine discs, read off the render. A card laid on a sun covers its
+  // disc: the discs are ~14% of the board's width, a card 15%. The card art is the deck's
+  // own (`assets/art/sooth/`), matched to the corpus's cards by `IS_SOOTH_ART`.
+  const BOARD = { image: 'assets/art/sooth/path-of-suns.webp', w: 2000, h: 3070, card: 0.15 };
+  const SLOTS = {
+    Silver: [0.496, 0.113], Green: [0.291, 0.235], Invisible: [0.711, 0.245], Blue: [0.500, 0.371],
+    Indigo: [0.291, 0.498], Grey: [0.711, 0.500], Pale: [0.500, 0.628], Red: [0.711, 0.765], Gold: [0.500, 0.895],
+  };
+  function art(c) {
+    const m = window.IS_SOOTH_ART;
+    const n = m && c && m.cards[c.name];
+    return n ? { thumb: 'assets/art/sooth/thumbs/' + n + '.webp', full: 'assets/art/sooth/cards/' + n + '.webp' } : null;
+  }
+  const backArt = () => (window.IS_SOOTH_ART ? 'assets/art/sooth/cards/' + window.IS_SOOTH_ART.back + '.webp' : null);
+
   const cards = () => D.byType('Sooth Card', ['decks']);
   const card = (id) => (id ? D.entity(id) : null);
   const suns = (c) => (D.val(c, 'Suns') || []).map((i) => i.value).filter(Boolean);
@@ -93,6 +110,81 @@ window.IsSooth = (function () {
       const h = D.entity(((m.character || {}).picks || {}).Heart);
       return h && HEART_FAMILY[h.name] === fam;
     });
+  }
+
+  // ── the zoom ──
+  // One overlay per page. Hovering a card on the board (or its name in the panel) shows
+  // the card's art at reading size, with its name, family, value and suns beside it.
+  let zoomEl = null;
+  function zoom(c, on) {
+    if (!zoomEl) {
+      zoomEl = el('div', { class: 'sooth-zoom', hidden: true });
+      document.body.appendChild(zoomEl);
+    }
+    if (!on || !c) {
+      zoomEl.hidden = true;
+      return;
+    }
+    const a = art(c);
+    const ss = suns(c);
+    zoomEl.innerHTML = '';
+    zoomEl.appendChild(el('div', { class: 'sooth-zoom-in' }, [
+      a ? el('img', { src: a.full, alt: c.name }) : null,
+      el('div', { class: 'sooth-zoom-text' }, [
+        el('div', { class: 'sooth-zoom-name' }, [c.name]),
+        el('div', { class: 'muted small' }, [[family(c), D.val(c, 'Value') != null ? 'value ' + D.val(c, 'Value') : null, rank(c)].filter(Boolean).join(' · ')]),
+        ss.length ? el('div', { class: 'sooth-suns' }, [
+          el('span', { class: 'sun sun-' + ss[0].toLowerCase() + ' strong' }, [el('span', { class: 'sun-dot' }), ' ', ss[0]]),
+          ss[1] ? el('span', { class: 'sun sun-' + ss[1].toLowerCase() + ' faint' }, [el('span', { class: 'sun-dot' }), ' ', ss[1]]) : null,
+        ]) : null,
+        (D.val(c, 'Meanings') || []).length ? el('div', { class: 'chiprow tight' }, (D.val(c, 'Meanings') || []).map((m) => el('span', { class: 'chip' }, [m.value]))) : null,
+      ]),
+    ]));
+    zoomEl.hidden = false;
+  }
+  function hoverable(node, c) {
+    node.addEventListener('mouseenter', () => zoom(c, true));
+    node.addEventListener('mouseleave', () => zoom(null, false));
+    node.addEventListener('focus', () => zoom(c, true));
+    node.addEventListener('blur', () => zoom(null, false));
+    return node;
+  }
+
+  // ── the board ──
+  // The cloth map with the cards laid on the suns. `onclick` opens a card (the Inspector on
+  // the GM's page); hovering shows it large. `big` is the board window's; the panel's is the
+  // same board, narrower.
+  function boardView(opts) {
+    const so = state();
+    const o = opts || {};
+    const wrap = el('div', { class: 'sooth-board' + (o.big ? ' big' : ''), style: 'aspect-ratio:' + BOARD.w + '/' + BOARD.h + ';background-image:url(' + BOARD.image + ')' });
+    Object.keys(SLOTS).forEach((sun) => {
+      const [fx, fy] = SLOTS[sun];
+      const id = sun === INVISIBLE ? so.invisible : so.path[sun];
+      const c = card(id);
+      const slot = el('div', {
+        class: 'sooth-spot sun sun-' + sun.toLowerCase() + (c ? ' filled' : '') + (so.on === sun && c ? ' active' : ''),
+        style: 'left:' + (fx * 100) + '%;top:' + (fy * 100) + '%;width:' + (BOARD.card * 100) + '%',
+        title: c ? c.name + ' — on ' + (sun === INVISIBLE ? 'the Invisible Sun' : 'the ' + sun + ' Sun') : (sun === INVISIBLE ? 'The Invisible Sun' : 'The ' + sun + ' Sun'),
+      });
+      if (c) {
+        const a = art(c);
+        const token = el('button', { class: 'sooth-token', type: 'button', 'aria-label': c.name, onclick: () => o.onclick && o.onclick(c.id) }, [
+          a ? el('img', { src: a.thumb, alt: '' }) : el('span', { class: 'sooth-token-name' }, [c.name]),
+        ]);
+        hoverable(token, c);
+        slot.appendChild(token);
+      }
+      wrap.appendChild(slot);
+    });
+    // the deck, face down, with its count
+    const back = backArt();
+    const deck = (so.deck || []).length;
+    wrap.appendChild(el('div', { class: 'sooth-deck', title: deck ? deck + ' cards in the deck' : 'the deck is unshuffled' }, [
+      back ? el('img', { src: back, alt: 'the deck' }) : null,
+      el('span', { class: 'sooth-deck-n' }, [deck ? String(deck) : '—']),
+    ]));
+    return wrap;
   }
 
   // ── rendering ──
@@ -175,9 +267,10 @@ window.IsSooth = (function () {
         el('a', { class: 'btn ghost tiny', href: 'gm/path.html', target: (window.VttConfig.channel || 'vtt') + '-board' }, ['Open the board']),
         el('span', { class: 'muted small' }, [(so.deck || []).length ? (so.deck.length + ' in the deck') : 'the deck is unshuffled']),
       ]));
-      container.appendChild(pathView({ onclick: (id) => window.VttPanels.select({ kind: 'entity', id }) }));
+      container.appendChild(boardView({ onclick: (id) => window.VttPanels.select({ kind: 'entity', id }) }));
       if (active) {
-        container.appendChild(el('h4', {}, ['The active card · ' + active.name, el('span', { class: 'muted small' }, [' · on ' + (so.on === INVISIBLE ? 'the Invisible Sun' : 'the ' + so.on + ' Sun')])]));
+        const h = el('h4', {}, [hoverable(el('span', { class: 'sooth-hover', tabindex: '0' }, ['The active card · ' + active.name]), active), el('span', { class: 'muted small' }, [' · on ' + (so.on === INVISIBLE ? 'the Invisible Sun' : 'the ' + so.on + ' Sun')])]);
+        container.appendChild(h);
         container.appendChild(effectLines(active, so.on));
         container.appendChild(listing(active));
         if (so.invisible && so.invisible !== so.active) {
@@ -209,10 +302,14 @@ window.IsSooth = (function () {
       container.innerHTML = '';
       const so = state();
       const active = card(so.active);
-      container.appendChild(pathView({ big: true }));
+      container.appendChild(boardView({ big: true, onclick: (id) => zoom(card(id), true) }));
       const side = el('div', { class: 'board-side' });
       if (active) {
-        side.appendChild(el('h2', {}, [active.name]));
+        const a = art(active);
+        side.appendChild(el('div', { class: 'board-active' }, [
+          a ? hoverable(el('img', { class: 'board-active-art', src: a.full, alt: active.name, tabindex: '0' }), active) : null,
+          el('div', {}, [el('h2', {}, [active.name])]),
+        ]));
         side.appendChild(el('div', { class: 'muted' }, ['on ' + (so.on === INVISIBLE ? 'the Invisible Sun' : 'the ' + so.on + ' Sun') + ' · ' + [family(active), 'value ' + D.val(active, 'Value'), rank(active)].filter(Boolean).join(' · ')]));
         side.appendChild(effectLines(active, so.on, { noParty: false }));
         side.appendChild(listing(active, { player: !!o.player }));
@@ -234,11 +331,15 @@ window.IsSooth = (function () {
     const so = state();
     const active = card(so.active);
     if (!active) return null;
+    const a = art(active);
     return el('div', { class: 'sooth-strip' }, [
-      cardTile(active, so.on, { active: true }),
-      el('div', {}, [effectLines(active, so.on), listing(active, { player: true })]),
+      a ? hoverable(el('img', { class: 'sooth-strip-art', src: a.full, alt: active.name, tabindex: '0' }), active) : cardTile(active, so.on, { active: true }),
+      el('div', {}, [
+        el('div', { class: 'sooth-name' }, [active.name, el('span', { class: 'muted small' }, [' · on ' + (so.on === INVISIBLE ? 'the Invisible Sun' : 'the ' + so.on + ' Sun')])]),
+        effectLines(active, so.on), listing(active, { player: true }),
+      ]),
     ]);
   }
 
-  return { PATH, INVISIBLE, HEART_FAMILY, ROYALTY, cards, state, nextSun, shuffle, turn, effects, favoured, renderPanel, renderBoard, strip, pathView };
+  return { PATH, INVISIBLE, HEART_FAMILY, ROYALTY, BOARD, SLOTS, art, cards, state, nextSun, shuffle, turn, effects, favoured, renderPanel, renderBoard, strip, pathView, boardView, zoom };
 })();

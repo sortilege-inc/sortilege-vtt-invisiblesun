@@ -250,6 +250,7 @@ server.
 | 28 | **(owner)** The engine's map table stays (`gm/vtt.html`) with GM-set images and blank grids; no shipped maps, no legend | The corpus has no map art; the table is still where pings, tokens and a picture the GM supplies live. Near-zero new code. |
 | 29 | A party member is `{ character, live }`: the site's character file as it stands, plus `live.values` (the six harm/advancement values) and `live.spent` (bene taken from each pool); `templateId` is the corpus's ACTOR id; the roll is the ACTOR's own RULES lines and The Key p24/30/74, nothing added | A pool's division is the sheet's; what play changes is how much of it is spent. Keeping the site's file whole means *Download my character* on the player's page writes a file the site's roster reads back. |
 | 30 | The three default slots come from `engine/config.js` (`defaultSlots`), a one-line engine change | The engine hard-coded TEETH's panel names; a system's panels are its own to name. |
+| 31 | **(owner, 2026-09-21)** The books' own art comes into the table: the Path of Suns cloth map is the board the cards are laid on, the sixty Sooth cards are drawn on it from the deck's art (hover shows a card at reading size), and the poster map of Indigo and the cloth map of Satyrine ship as maps the GM can set on any scene. All from the GM Tools; converted to WebP under `assets/art/` (board 2000 px, maps at their native 2150×3300, cards 700 px + 240 px thumbs; 8 MB). `assets/art/sooth/index.json` maps card name → card number, the deck PDF's own order (checked on cards 01, 02, 31 and 60 by eye) | This reverses D3's "no images" for the table only, on the owner's explicit instruction; the *corpus* still carries no image, and the nine sun positions are fractions of the board read off the render, not content. The repo is public: what is committed is published. |
 | 23 | The sheet is arranged as a sheet — masthead with the describing sentence, the six fingers as cards, stat tiles and pools, the tracks as a strip, rated tables, magic by kind, bonds, the foundation's and soul's own tables — but the fields are still read off the ACTOR: the layout names where a declared field goes, and a field it does not name lands in a final *Also declared* section (empty today, asserted so in the M7 proof) | Derivation from the ACTOR is the M3 principle and stays; what was missing was arrangement, and a hand-listed arrangement of declared fields loses nothing as long as the leftover bucket exists. |
 | 24 | The checklist is what the book asks for, each ask naming the step it is settled at (`IsCreator.asks`): order, heart with its points divided and its pair of skills, forte, soul, foundation, an arc, a bond with another PC, a name. Style and the order's magic are the book's optional steps and are not asked | The chips coloured done/not-done but said neither what was chosen nor what was missing; a player finishing saw a form, not a list. Asks are the book's steps, not rules of this tool's. |
 
@@ -276,6 +277,12 @@ Open, none blocking:
   epigraph — which the fragments had hidden — set as guidance on its chapter. The Bestiary now
   lists **245** Teratology blocks (it read `Level:` only in a block's first 400 characters before,
   and a creature's prose comes first).
+
+The Path of Suns board (decision 31): `IsSooth.boardView` lays the cards on the cloth map at
+`SLOTS` (fractions of the board; the Invisible Sun is the sigil at the right); `IsSooth.zoom`
+is the one hover overlay per page. The card art index is `assets/art/sooth/index.js`, generated
+from `index.json`. The two maps are `VttSystem.mapAssets()` — the table's "maps in the repo…"
+picker.
 
 Dev: `vtt-invisiblesun` serves the site on 8736; `vtt-invisiblesun-worker` runs the Worker on
 8787 (both in `~/.claude/launch.json`). A player test needs a second origin: open the player's

@@ -28,12 +28,18 @@ window.VttSystem = (function () {
     return (all.find((s) => s.id === cur) || all[0] || {}).id || null;
   }
 
-  // no shipped maps: every scene is its own blank map until the GM sets an image on it
+  // No map is tied to a scene — a scene is the GM's own — but two of the books' maps ship
+  // here for the GM to set on any scene from the table's "maps in the repo…" picker: the
+  // poster map of Indigo and the cloth map of the City of Satyrine (GM Tools; owner's
+  // call to carry them, 2026-09-21).
   const maps = () => [];
   const mapDef = () => null;
   const defaultMapId = (sceneId) => sceneId;
   const legend = () => null;
-  const mapAssets = () => [];
+  const mapAssets = () => [
+    { label: 'Indigo — the poster map', image: 'assets/art/maps/indigo.webp' },
+    { label: 'The City of Satyrine — the cloth map', image: 'assets/art/maps/satyrine.webp' },
+  ];
 
   // ── tokens: the party, and the current scene's cast ────────────────
   function tokenSources() {
