@@ -209,9 +209,11 @@
   // shape in the loaded books, by book and by the sun it is printed under. Teratology,
   // the bestiary, is fetched the first time this opens.
   const BESTIARY = 'teratology';
+  // A creature is its prose and then its block, and the block may come a page of prose
+  // in: the level line and at least one of the block's own labels, anywhere in the text.
   function isStatBlock(e) {
     const t = (D.text(e, 'Text') || '');
-    return /\bLevel:\s*\d+/.test(t.slice(0, 400)) && /\b(Defenses?|Injuries|Wounds|Motive|Environment|Interaction|Combat|Loot)\b/.test(t.slice(0, 900));
+    return /(^|\n)Level:\s*\d+/.test(t) && /(^|\n)(Injuries|Wounds|Anguish|Defenses( \([A-Za-z]+\))?|Traits|GM Shift):/.test(t);
   }
   function blocks() {
     return D.all(loadedBooks()).filter((e) => e.type === 'Rule' && isStatBlock(e));
@@ -247,10 +249,6 @@
               el('ul', { class: 'items toc' }, chapters[ch].map((e) => el('li', {}, [
                 el('button', { class: 'ref', type: 'button', onclick: () => Panels.select({ kind: 'entity', id: e.id }) }, [e.name]),
                 el('span', { class: 'muted small' }, [' · ' + levelOf(e)]),
-                // fourteen of Teratology's blocks carry the chapter's title for a name (the
-                // creature's heading was lost in conversion; reported to the corpus): say
-                // how the block opens so they can be told apart
-                /^The .* (Sun|Dark) \(Teratology p\d+\)$/.test(e.name) ? el('div', { class: 'muted small' }, [(D.text(e, 'Text') || '').slice(0, 90).replace(/\n+/g, ' ') + '…']) : null,
               ]))),
             ])),
           ]));

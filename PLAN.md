@@ -270,9 +270,12 @@ cd worker && npx wrangler deploy
 Open, none blocking:
 - **Enforce HTTPS** on Pages once GitHub's certificate for the domain lands.
 - The print stylesheet for the sheet is unproofed (the browser pane cannot print-preview).
-- Corpus, reported in its TODO: The Key p16 *The Path of Suns* is truncated to 32 characters;
-  fourteen Teratology stat blocks carry their chapter's title for a name (the Bestiary shows their
-  opening words beside such names until the corpus has the headings).
+- ~~Corpus: The Key p16 truncated; Teratology blocks named after their chapter~~ — **repaired in
+  the corpus 2026-09-21** (`09d6200`, from the surviving `pdftohtml` XML): the Path of Suns page
+  rebuilt, 64 second-column fragments merged back under their creatures, and every chapter's
+  epigraph — which the fragments had hidden — set as guidance on its chapter. The Bestiary now
+  lists **245** Teratology blocks (it read `Level:` only in a block's first 400 characters before,
+  and a creature's prose comes first).
 
 Dev: `vtt-invisiblesun` serves the site on 8736; `vtt-invisiblesun-worker` runs the Worker on
 8787 (both in `~/.claude/launch.json`). A player test needs a second origin: open the player's
