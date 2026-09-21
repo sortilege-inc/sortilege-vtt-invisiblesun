@@ -3,7 +3,10 @@
 A play aid for **Invisible Sun** (Monte Cook Games) built from the
 [Titterpig DSL corpus](../../Titterpig/DSL/titterpig-dsl-invisiblesun) — the thirteen
 sourcebooks, the fifteen card decks, the setting prose, and a character creator that walks
-*The Key*'s own chapter. Plan, decisions and milestones: [PLAN.md](PLAN.md).
+*The Key*'s own chapter with the book's text beside each decision, keeping a roster of vislae
+in the browser and writing each out as a file. Plan, decisions and milestones: [PLAN.md](PLAN.md).
+
+Live at **https://actuality.sortilege.online/** (and the github.io address behind it).
 
 Buildless static site (GitHub Pages). Phase one is the site; the GM's table, maps and
 player sessions come later.
@@ -18,7 +21,8 @@ player sessions come later.
 | M3 — the vislae sheet, derived from the corpus `^"Vislae"` ACTOR | **landed** (2026-09-20) |
 | M4 — the character creator | **landed** (2026-09-20) |
 | M5 — the five sample vislae as starts | **landed** (2026-09-20) |
-| M6 — deployed | planned |
+| M6 — deployed: GitHub Pages, `actuality.sortilege.online` | **landed** (2026-09-20) |
+| M7 — the sheet and the walk redesigned: decision first with the book beside it, cards that say what they are, finders for the decks, a roster, the sheet as a sheet, mobile | **landed** (2026-09-20) |
 
 ## Running it
 
@@ -48,7 +52,7 @@ bash build/build.sh            # build → verify both directions → check shap
 
 Gate status from `bash build/build.sh` on 2026-09-20: 41 corpus files → 15 books,
 **6,779 entities + 3,532 margin notes**; `verify_data: 25,391 strings + 2,656 lore lines —
-0 uncovered · 0 unsourced`; `check_shape: OK` (42 assertions).
+0 uncovered · 0 unsourced`; `check_shape: OK` (47 assertions).
 
 ## Layout
 
@@ -58,7 +62,8 @@ build/                   the generator and its gate
 data/                    GENERATED — window.INVISIBLESUN.books / .entities / .index
 engine/                  system-agnostic: render, the on-demand data loader, the site shell,
                          and (for later phases) bus, ops, state, panels, session, table
-system/invisiblesun/     the Invisible Sun module: what a sheet is, what the site lists
+system/invisiblesun/     the Invisible Sun module: what a sheet is (sheet.js, derived from the
+                         ACTOR), the walk (creator.js), the roster (roster.js), what the site lists
 assets/css/              the look: a black box, cream pages, the nine suns
 ```
 

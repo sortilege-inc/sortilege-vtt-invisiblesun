@@ -3,7 +3,6 @@
 // titterpig-dsl-invisiblesun/0.5 through data/; this file decides only what is listed
 // where, and pays for a book's data when a reader asks for it.
 //
-// The vislae sheet is M3 and the creator M4; their tabs hold a placeholder until then.
 window.VttSiteTabs = (function () {
   const { el, paragraphs, debounce } = window.VttRender;
   const Data = window.VttData;          // the loader (engine): which files a book costs
@@ -340,10 +339,7 @@ window.VttSiteTabs = (function () {
         el('div', { class: 'chiprow' }, [
           el('button', {
             class: 'btn', type: 'button',
-            onclick: () => {
-              if (window.IsCreator.load() && !confirm('Start from ' + sample.name + '? The draft you have now is discarded.')) return;
-              window.IsCreator.startFrom(sample, ctx);
-            },
+            onclick: () => window.IsCreator.startFrom(sample, ctx),
           }, ['Start a vislae from this']),
           el('a', { class: 'btn ghost', href: ctx.href('books', ['key', sample.id]) }, ['In the book']),
         ]),
@@ -351,7 +347,7 @@ window.VttSiteTabs = (function () {
     })));
 
     page.appendChild(el('div', { class: 'chiprow' }, [
-      el('a', { class: 'btn ghost', href: ctx.href('creator', ['begin']) }, ['Or begin with nothing decided']),
+      el('a', { class: 'btn ghost', href: ctx.href('creator', []) }, ['Or the roster: begin with nothing decided, or go on with one']),
     ]));
   }
 
