@@ -256,6 +256,8 @@ a.ref.active { color: var(--note-red); font-weight: 600; border-bottom-color: va
 
 /* ── an entity ────────────────────────────────────────────── */
 .entity { margin-bottom: 0.8rem; }
+/* a name is the book's, spaces included: Teratology's p59 creature is named `(` nineteen spaces `)` */
+.entity h3, .toc a.ref, .toc button.ref, .card-name, .hit .ref { white-space: pre-wrap; }
 .etype {
   font-family: var(--display);
   font-size: 0.66rem;
