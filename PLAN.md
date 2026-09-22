@@ -279,7 +279,9 @@ Open, none blocking:
   and a creature's prose comes first).
 
 The Path of Suns board (decision 31): `IsSooth.boardView` lays the cards on the cloth map at
-`SLOTS` (fractions of the board; the Invisible Sun is the sigil at the right); `IsSooth.zoom`
+`SLOTS` (fractions of the board, measured from the image's disc interiors 2026-09-22; the path
+climbs — Silver is the bottom disc, Gold the top, the owner's reading of the map — and the
+Invisible Sun is the sigil at the upper right); `IsSooth.zoom`
 is the one hover overlay per page. The card art index is `assets/art/sooth/index.js`, generated
 from `index.json`. The two maps are `VttSystem.mapAssets()` — the table's "maps in the repo…"
 picker.

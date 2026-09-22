@@ -36,14 +36,19 @@ window.IsSooth = (function () {
   };
 
   // The board is the Path of Suns cloth map (GM Tools, `assets/art/sooth/path-of-suns.webp`,
-  // 2000×3070), and the nine suns are positions on it as fractions of its width and height
-  // — the centres of the nine discs, read off the render. A card laid on a sun covers its
-  // disc: the discs are ~14% of the board's width, a card 15%. The card art is the deck's
-  // own (`assets/art/sooth/`), matched to the corpus's cards by `IS_SOOTH_ART`.
-  const BOARD = { image: 'assets/art/sooth/path-of-suns.webp', w: 2000, h: 3070, card: 0.15 };
+  // 2000×3070), and the nine suns are positions on it as fractions of its width and height.
+  // The eight discs' centres are measured from the image (the cream interior of each ring,
+  // found by component labelling; inner diameter 304px = 15.2% of the width), and a card
+  // covers a disc at 15.6%. The path climbs: Silver is the bottom disc and Gold the top
+  // (owner's reading of the map, 2026-09-22), the drawn line threading bottom → lower-right
+  // → lower-centre → mid-right → mid-left → upper-centre → upper-left → top. The Invisible
+  // Sun sits aside on the sigil at the upper right. The card art is the deck's own
+  // (`assets/art/sooth/`), matched to the corpus's cards by `IS_SOOTH_ART`.
+  const BOARD = { image: 'assets/art/sooth/path-of-suns.webp', w: 2000, h: 3070, card: 0.156 };
   const SLOTS = {
-    Silver: [0.496, 0.113], Green: [0.291, 0.235], Invisible: [0.711, 0.245], Blue: [0.500, 0.371],
-    Indigo: [0.291, 0.498], Grey: [0.711, 0.500], Pale: [0.500, 0.628], Red: [0.711, 0.765], Gold: [0.500, 0.895],
+    Silver: [0.5020, 0.8984], Green: [0.7050, 0.7674], Blue: [0.5020, 0.6352], Indigo: [0.7050, 0.5036],
+    Grey: [0.2990, 0.5036], Pale: [0.5020, 0.3720], Red: [0.2990, 0.2391], Gold: [0.5010, 0.1075],
+    Invisible: [0.7010, 0.2456],
   };
   function art(c) {
     const m = window.IS_SOOTH_ART;
