@@ -254,6 +254,25 @@ server.
 | 23 | The sheet is arranged as a sheet — masthead with the describing sentence, the six fingers as cards, stat tiles and pools, the tracks as a strip, rated tables, magic by kind, bonds, the foundation's and soul's own tables — but the fields are still read off the ACTOR: the layout names where a declared field goes, and a field it does not name lands in a final *Also declared* section (empty today, asserted so in the M7 proof) | Derivation from the ACTOR is the M3 principle and stays; what was missing was arrangement, and a hand-listed arrangement of declared fields loses nothing as long as the leftover bucket exists. |
 | 24 | The checklist is what the book asks for, each ask naming the step it is settled at (`IsCreator.asks`): order, heart with its points divided and its pair of skills, forte, soul, foundation, an arc, a bond with another PC, a name. Style and the order's magic are the book's optional steps and are not asked | The chips coloured done/not-done but said neither what was chosen nor what was missing; a player finishing saw a form, not a list. Asks are the book's steps, not rules of this tool's. |
 
+## Family standards (PLAYBOOK §4b, owner 2026-09-24)
+
+Ported from sortilege-vtt-l5r5e (I19) as system-free engine files, so this repo's `system/` is
+untouched but for its site tabs:
+
+1. **Not crawled** — `robots.txt` (the AI crawlers by name, then `*`) and a robots meta tag on every page.
+2. **The GM's material in the GM tabs, in the pack** — `engine/gm-text.js` (the GM Markdown with its
+   SET / OPEN / SOURCE tags, sections with an editor, notes, search) and `engine/gm-panes.js`
+   (Overview with rulings and free notes, Scenes with sessions, beats and questions for the table,
+   Threads, Places, People); their ops are local, never sent to a session's room
+   (`engine/ops.js` LOCAL, `engine/session.js`). The seed now fills by id and never re-adds what the
+   GM removed (`engine/state.js`); `hidePanes` / `paneOrder` (`engine/panels.js`).
+3. **A gate in front of /gm/** — `VttConfig.gmGate` (`engine/app.js`), once per tab.
+4. **The books off the public site** — `siteBooks: false`; every site tab but the dice is marked
+   `books`; the GM turns them on per browser in the new Settings pane. With every tab closed the
+   site says so. The book data stays publicly served (owner: fine for now).
+
+**Landed 2026-09-24** — localhost:8736 — the site: one tab, the closed-books page, the robots tag (gm/path.html carries it too); /gm/: the gate, Enter, the six new panes; a place saved; no console errors.
+
 ## STOPPED HERE — to resume
 
 **Phase two — the GM's table — has landed, G1–G5**, on the engine phase one left in place. The

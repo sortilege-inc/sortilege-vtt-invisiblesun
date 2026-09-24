@@ -352,8 +352,8 @@ window.VttSiteTabs = (function () {
   }
 
   return [
-    { id: 'books', label: 'The books', render: renderBooks },
-    { id: 'vislae', label: 'Vislae', render: renderVislae },
-    { id: 'creator', label: 'Make a vislae', render: (c, p, ctx) => window.IsCreator.render(c, p, ctx) },
+    { id: 'books', label: 'The books', render: renderBooks, books: true },
+    { id: 'vislae', label: 'Vislae', render: renderVislae, books: true },
+    { id: 'creator', label: 'Make a vislae', render: (c, p, ctx) => window.IsCreator.render(c, p, ctx), books: true },
   ];
 })();
