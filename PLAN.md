@@ -2,7 +2,7 @@
 
 A virtual tabletop for **Invisible Sun** (Monte Cook Games), built on the Titterpig corpus
 `titterpig-dsl-invisiblesun/0.5`. Its shape follows `sortilege-vtt-teeth`, read as a reference
-only — that repo's `PLAYBOOK.md` states the generalisable rules this one works to, and neither it
+only — the family `PLAYBOOK.md` (in `~/Sortilege/VTT/`, beside the VTT repos) states the generalisable rules this one works to, and neither it
 nor anything else in that repo is modified here. Fifth in the line — Wyldwolf Axis, NOVA Open,
 City of Winter, TEETH.
 
