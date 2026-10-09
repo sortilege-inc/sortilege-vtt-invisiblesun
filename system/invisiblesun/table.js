@@ -54,6 +54,20 @@ window.VttSystem = (function () {
 
   // the site's own palette: gold for the vislae, red for what they meet, grey for a marker
   const COLORS = { party: '#a8842b', cast: '#96262a', marker: '#77746e' };
+
+  // the rings a token may wear (the table's options menu) and a dozen generic faces for an NPC with
+  // no art (assets/tokens/npc/) — ported from sortilege-vtt-teeth (2026-10-09)
+  const PALETTE = [
+    { name: 'Green', color: '#4f6b3a' }, { name: 'Red', color: '#8f1d22' }, { name: 'Black', color: '#1a1613' }, { name: 'Grey', color: '#6b6154' },
+    { name: 'Ochre', color: '#b9842a' }, { name: 'Blue', color: '#2f4f6b' }, { name: 'Violet', color: '#5b3a6b' }, { name: 'Teal', color: '#2f6b5e' }, { name: 'Rust', color: '#a1481e' }, { name: 'Bone', color: '#efe6d3' },
+  ];
+  function tokenPalette() {
+    return PALETTE.map((c) => Object.assign({}, c));
+  }
+  const ICONS = ['person', 'hood', 'helm', 'crown', 'mitre', 'hat', 'skull', 'wolf', 'crow', 'boar', 'hound', 'purse'];
+  function tokenIcons() {
+    return ICONS.map((id) => ({ id, label: id[0].toUpperCase() + id.slice(1), image: 'assets/tokens/npc/' + id + '.svg' }));
+  }
   const tokenColor = (t) => COLORS[t.kind] || COLORS.marker;
 
   // A party token's word: the harm the sheet keeps ("Wounds 1 · Anguish 2"), only when there is some.
@@ -81,7 +95,7 @@ window.VttSystem = (function () {
 
   return {
     MODULE, scenes, scene, currentSceneId, maps, mapDef, defaultMapId, legend, mapAssets,
-    tokenSources, tokenColor, tokenStatus, selectToken, tokenMenu,
+    tokenSources, tokenColor, tokenPalette, tokenIcons, tokenStatus, selectToken, tokenMenu,
     liveSheet, readCharacter, downloadCharacter, memberSubtitle,
   };
 })();
